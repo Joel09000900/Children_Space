@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: olikrys
+      POSTGRES_PASSWORD: olikrys
+      POSTGRES_DB: olikrys
+    ports:
+      - "5432:5432"
+    volumes:
+      - olikrys-data:/var/lib/postgresql/data
+
+volumes:
+  olikrys-data:

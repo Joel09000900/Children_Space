@@ -1,0 +1,93 @@
+// Schéma Prisma de la galerie OliKrys
+// Doc : https://pris.ly/d/prisma-schema
+
+generator client {
+  provider   = "prisma-client-js"
+  // Client sans moteur Rust : les requêtes passent par le driver node-postgres (@prisma/adapter-pg)
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Série d'œuvres (ex. une période ou un thème)
+model Collection {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String    @unique
+  description String?
+  year        Int?
+  color       String    @default("#7c3aed")
+  position    Int       @default(0)
+  artworks    Artwork[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("collections")
+}
+
+/// Technique picturale (huile, acrylique, aquarelle…)
+model Technique {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  /// Niveau de maîtrise affiché sur la page À propos (0-100)
+  mastery     Int       @default(50)
+  artworks    Artwork[]
+  createdAt   DateTime  @default(now())
+
+  @@map("techniques")
+}
+
+model Artwork {
+  id           String      @id @default(cuid())
+  slug         String      @unique
+  title        String
+  description  String
+  dimensions   String?
+  year         Int?
+  imageUrl     String
+  thumbUrl     String?
+  featured     Boolean     @default(false)
+  available    Boolean     @default(true)
+  position     Int         @default(0)
+  collectionId String?
+  collection   Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  techniqueId  String?
+  technique    Technique?  @relation(fields: [techniqueId], references: [id], onDelete: SetNull)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([collectionId])
+  @@index([featured])
+  @@map("artworks")
+}
+
+enum ExhibitionKind {
+  SOLO
+  GROUP
+}
+
+model Exhibition {
+  id        String         @id @default(cuid())
+  title     String
+  venue     String
+  city      String
+  kind      ExhibitionKind @default(GROUP)
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime       @default(now())
+
+  @@map("exhibitions")
+}
+
+/// Paramètres clé/valeur (numéro WhatsApp, page Facebook, textes du site…)
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}

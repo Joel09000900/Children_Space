@@ -1,0 +1,57 @@
+/* Jetons de design — thème sombre par défaut */
+:root {
+  --violet-900: #3b0764;
+  --violet-700: #5b21b6;
+  --violet-600: #7c3aed;
+  --violet-500: #8b5cf6;
+  --violet-400: #a78bfa;
+  --violet-200: #ddd6fe;
+  --gold-500: #d4a843;
+  --gold-300: #f0c060;
+  --gold-700: #8b6914;
+  --whatsapp: #22c55e;
+  --facebook: #1877f2;
+
+  --bg: #080810;
+  --bg-2: #0f0f1a;
+  --surface: #13131f;
+  --surface-2: #1a1a2e;
+  --text: #f5f3ff;
+  --text-2: #c4b5fd;
+  --muted: #8b8aa0;
+  --border: rgba(139, 92, 246, 0.14);
+  --border-strong: rgba(139, 92, 246, 0.35);
+  --glow: rgba(139, 92, 246, 0.35);
+  --glass: rgba(13, 13, 25, 0.6);
+
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Cormorant Garamond", Georgia, serif;
+  --font-ui: "Inter", system-ui, -apple-system, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.55);
+  --shadow-violet: 0 0 32px rgba(139, 92, 246, 0.3);
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --nav-h: 72px;
+  --max-w: 1320px;
+  --gutter: clamp(16px, 4vw, 40px);
+}
+
+:root[data-theme="light"] {
+  --bg: #faf8ff;
+  --bg-2: #f1edfb;
+  --surface: #ffffff;
+  --surface-2: #f5f2fd;
+  --text: #1c1530;
+  --text-2: #5b21b6;
+  --muted: #6b6880;
+  --border: rgba(91, 33, 182, 0.12);
+  --border-strong: rgba(91, 33, 182, 0.3);
+  --glow: rgba(124, 58, 237, 0.2);
+  --glass: rgba(255, 255, 255, 0.75);
+  --shadow-lg: 0 12px 40px rgba(40, 20, 80, 0.14);
+}

@@ -1,0 +1,25 @@
+/* ---------- Inscription / Connexion ---------- */
+.auth { min-height: 80vh; display: grid; place-items: center; padding: calc(var(--nav-h) + 40px) var(--gutter) 60px; }
+.auth__card {
+  width: min(440px, 100%); display: flex; flex-direction: column; gap: 12px; padding: 36px 32px;
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  animation: pop 0.35s var(--ease-out);
+}
+.auth__title { font-size: clamp(2rem, 5vw, 2.6rem); font-weight: 700; }
+.auth__lead { color: var(--text-2); }
+.auth__form { display: flex; flex-direction: column; gap: 16px; margin-top: 10px; }
+.auth__message { padding: 10px 14px; border-radius: var(--radius-md); background: var(--surface-2); font-family: var(--font-ui); font-size: 0.85rem; color: var(--text-2); }
+.auth__message--error { color: #f87171; }
+.auth__switch { margin-top: 6px; text-align: center; font-family: var(--font-ui); font-size: 0.85rem; color: var(--muted); }
+.auth__switch a { color: var(--violet-400); }
+.auth__switch a:hover { text-decoration: underline; }
+
+.field { display: flex; flex-direction: column; gap: 6px; font-family: var(--font-ui); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.field input {
+  padding: 12px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md);
+  color: var(--text); font-family: var(--font-ui); font-size: 1rem; letter-spacing: normal; text-transform: none;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.field input:focus { outline: none; border-color: var(--violet-500); box-shadow: 0 0 0 3px var(--glow); }
+
+@media (max-width: 480px) { .auth__card { padding: 28px 20px; } }
