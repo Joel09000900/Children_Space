@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { api } from "../api/client";
-import type { AdminStats } from "../api/types";
+import type { AdminStats, ContactMessage, ContactStatus } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 import ChartCard from "../components/charts/ChartCard";
 import TimeSeriesChart from "../components/charts/TimeSeriesChart";
@@ -13,6 +13,8 @@ const plural = (n: number, word: string) => `${fmt(n)} ${word}${n > 1 ? "s" : ""
 const dayLabel = (key: string) =>
   new Date(`${key}T00:00:00`).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" });
 const fullDate = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+const dateTime = (iso: string) =>
+  new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
 export default function AdminPage() {
   const { user, loading } = useAuth();
@@ -77,6 +79,97 @@ function Dashboard() {
       {error && <p className="state state--error">{error}</p>}
       {!stats && !error && <p className="state">Chargement des statistiques…</p>}
       {stats && <StatsView stats={stats} refreshing={refreshing} />}
+
+      <Messages />
+    </section>
+  );
+}
+
+/** Messages reçus par le formulaire de la page Contact */
+function Messages() {
+  const [messages, setMessages] = useState<ContactMessage[] | null>(null);
+  const [unread, setUnread] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    api
+      .adminMessages(ctrl.signal)
+      .then((res) => {
+        setMessages(res.data);
+        setUnread(res.meta.unread);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!ctrl.signal.aborted) setError(err.message);
+      });
+    return () => ctrl.abort();
+  }, []);
+
+  const setStatus = (id: string, status: ContactStatus) =>
+    api
+      .adminMessageStatus(id, status)
+      .then((updated) => {
+        setMessages((list) => list?.map((m) => (m.id === updated.id ? updated : m)) ?? null);
+        setUnread((n) => (status === "NEW" ? n + 1 : Math.max(0, n - 1)));
+      })
+      .catch((err: Error) => setError(err.message));
+
+  // Ouvrir un message le marque lu : c'est le geste qui le signale traité.
+  const toggle = (m: ContactMessage) => {
+    const opening = openId !== m.id;
+    setOpenId(opening ? m.id : null);
+    if (opening && m.status === "NEW") void setStatus(m.id, "READ");
+  };
+
+  return (
+    <section className="chart-card admin__wide admin__messages" aria-labelledby="messages-title">
+      <h2 id="messages-title" className="chart-card__title">
+        Messages reçus
+        {unread > 0 && <span className="admin__badge">{unread} non lu{unread > 1 ? "s" : ""}</span>}
+      </h2>
+
+      {error && <p className="state state--error">{error}</p>}
+      {!messages && !error && <p className="admin__empty">Chargement des messages…</p>}
+      {messages?.length === 0 && <p className="admin__empty">Aucun message pour l'instant.</p>}
+
+      {messages && messages.length > 0 && (
+        <ul className="msg-list">
+          {messages.map((m) => (
+            <li key={m.id} className={`msg msg--${m.status.toLowerCase()}`}>
+              <button type="button" className="msg__head" onClick={() => toggle(m)} aria-expanded={openId === m.id}>
+                <span className="msg__subject">{m.subject}</span>
+                <span className="msg__from">
+                  {m.name} · {m.email}
+                  {m.author && <span className="tag">membre</span>}
+                </span>
+                <span className="msg__date">{dateTime(m.createdAt)}</span>
+              </button>
+
+              {openId === m.id && (
+                <div className="msg__body">
+                  <p>{m.message}</p>
+                  <div className="msg__actions">
+                    <a className="btn btn--outline btn--sm" href={`mailto:${m.email}?subject=${encodeURIComponent(`Re : ${m.subject}`)}`}>
+                      Répondre par e-mail
+                    </a>
+                    {m.status === "ARCHIVED" ? (
+                      <button type="button" className="btn btn--ghost btn--sm" onClick={() => setStatus(m.id, "READ")}>
+                        Désarchiver
+                      </button>
+                    ) : (
+                      <button type="button" className="btn btn--ghost btn--sm" onClick={() => setStatus(m.id, "ARCHIVED")}>
+                        Archiver
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

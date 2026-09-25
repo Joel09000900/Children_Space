@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import GalleryPage from "./pages/GalleryPage";
 import AboutPage from "./pages/AboutPage";
 import BibliographyPage from "./pages/BibliographyPage";
+import ContactPage from "./pages/ContactPage";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
@@ -18,6 +19,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 const PAGE_TITLES: [path: string, title: string][] = [
   ["/a-propos", "À propos"],
   ["/bibliographie", "Bibliographie"],
+  ["/contact", "Contact"],
   ["/inscription", "Inscription"],
   ["/connexion", "Connexion"],
   ["/admin", "Administration"],
@@ -76,6 +78,7 @@ export default function App() {
         <Route path="/" element={<GalleryPage />} />
         <Route path="/a-propos" element={<AboutPage />} />
         <Route path="/bibliographie" element={<BibliographyPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/inscription" element={<RegisterPage />} />
         <Route path="/connexion" element={<LoginPage />} />
         <Route path="/admin" element={<AdminPage />} />

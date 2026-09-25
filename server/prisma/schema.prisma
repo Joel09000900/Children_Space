@@ -132,6 +132,7 @@ model User {
   passwordHash String
   role Role @default(MEMBER)
   sessions Session[]
+  contactMessages ContactMessage[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -150,4 +151,29 @@ model Session {
 
   @@index([userId])
   @@map("sessions")
+}
+
+enum ContactStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+/// Message envoyé depuis le formulaire public de la page Contact
+model ContactMessage {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    ContactStatus @default(NEW)
+  /// Auteur connecté au moment de l'envoi, s'il y en avait un (jamais exigé)
+  userId    String?
+  user      User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status, createdAt])
+  @@index([createdAt])
+  @@map("contact_messages")
 }

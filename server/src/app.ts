@@ -9,6 +9,7 @@ import collections from "./routes/collections";
 import settings from "./routes/settings";
 import about from "./routes/about";
 import publications from "./routes/publications";
+import contact from "./routes/contact";
 import auth from "./routes/auth";
 import admin from "./routes/admin";
 import { prisma } from "./lib/prisma";
@@ -18,11 +19,31 @@ import { verifyOrigin } from "./middleware/origin";
 /** Origines autorisées par défaut quand CLIENT_ORIGIN n'est pas renseigné (développement) */
 const DEV_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"];
 
+/**
+ * Met une origine sous la forme exacte qu'envoie le navigateur : « schéma://hôte[:port] ».
+ *
+ * Un `CLIENT_ORIGIN` recopié depuis la barre d'adresse traîne presque toujours une
+ * barre finale, parfois un chemin. La comparaison étant une égalité stricte, l'API
+ * rejetait alors *toutes* les requêtes du site — CORS et contrôle d'`Origin` — sans
+ * message explicite. Le piège coûte une soirée à comprendre : on le neutralise ici.
+ */
+export function normalizeOrigin(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  try {
+    // new URL() reconstruit l'origine canonique et laisse tomber chemin et barre finale
+    return new URL(trimmed).origin;
+  } catch {
+    // Valeur qui n'est pas une URL absolue : on retire au moins les barres finales
+    return trimmed.replace(/\/+$/, "");
+  }
+}
+
 export function allowedOrigins(env: NodeJS.ProcessEnv = process.env) {
   const configured = env.CLIENT_ORIGIN?.split(",")
-    .map((o) => o.trim())
+    .map(normalizeOrigin)
     .filter(Boolean);
-  if (configured?.length) return configured;
+  if (configured?.length) return [...new Set(configured)];
   // En production on n'autorise jamais « toutes les origines » : le cookie de session
   // est envoyé avec credentials, une origine reflétée permettrait de voler la session.
   if (env.NODE_ENV === "production") {
@@ -85,7 +106,11 @@ export function createApp() {
   // même si le navigateur y a joint le cookie de session.
   app.use("/api", verifyOrigin(origins));
   app.use(express.json({ limit: "100kb" }));
-  if (process.env.NODE_ENV !== "test") app.use(morgan("dev"));
+  // « dev » colore la sortie avec des codes ANSI, illisibles dans les journaux Render.
+  // « combined » est le format standard, exploitable par les agrégateurs de logs.
+  if (process.env.NODE_ENV !== "test") {
+    app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+  }
 
   app.get("/api/health", async (_req, res) => {
     try {
@@ -103,6 +128,7 @@ export function createApp() {
   app.use("/api/settings", settings);
   app.use("/api/about", about);
   app.use("/api/publications", publications);
+  app.use("/api/contact", contact);
   app.use("/api/auth", auth);
   app.use("/api/admin", admin);
   app.use("/api", notFound);

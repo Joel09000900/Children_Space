@@ -10,6 +10,7 @@ import "./styles/layout.css";
 import "./styles/gallery.css";
 import "./styles/about.css";
 import "./styles/biblio.css";
+import "./styles/contact.css";
 import "./styles/auth.css";
 import "./styles/admin.css";
 

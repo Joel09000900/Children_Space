@@ -64,3 +64,36 @@
   .stat-tile--hero { grid-column: 1 / -1; }
   .stat-tile, .chart-card { padding: 18px 16px; }
 }
+
+/* ---------- Messages du formulaire de contact ---------- */
+.admin__messages .chart-card__title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.admin__badge {
+  padding: 3px 12px; border-radius: var(--radius-pill);
+  background: var(--violet-600); color: #fff;
+  font-family: var(--font-ui); font-size: 0.7rem; letter-spacing: 0.04em;
+}
+
+.msg-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.msg { background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--border); border-radius: 0 var(--radius-md) var(--radius-md) 0; overflow: hidden; }
+.msg--new { border-left-color: var(--violet-500); }
+.msg--archived { opacity: 0.6; }
+
+.msg__head {
+  display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; width: 100%;
+  padding: 16px 20px; text-align: left; font-family: var(--font-ui);
+  transition: background 0.2s var(--ease);
+}
+.msg__head:hover { background: var(--surface); }
+.msg__subject { font-size: 0.95rem; font-weight: 500; color: var(--text); }
+.msg--new .msg__subject { font-weight: 600; }
+.msg__from { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; grid-column: 1; font-size: 0.8rem; color: var(--muted); }
+.msg__date { grid-row: 1 / span 2; align-self: center; font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+
+.msg__body { padding: 0 20px 18px; border-top: 1px solid var(--border); }
+.msg__body p { padding-top: 16px; color: var(--text-2); line-height: 1.6; white-space: pre-wrap; }
+.msg__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+
+@media (max-width: 560px) {
+  .msg__head { grid-template-columns: 1fr; }
+  .msg__date { grid-row: auto; }
+}

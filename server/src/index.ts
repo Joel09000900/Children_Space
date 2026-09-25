@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { createApp } from "./app";
 import { prisma } from "./lib/prisma";
-import { adminConfig, ensureAdmin } from "./lib/auth";
+import { adminConfig, ensureAdmin, purgeExpiredSessions } from "./lib/auth";
 
 // Une configuration invalide (mot de passe admin trop faible en production,
 // pseudo mal formé, CLIENT_ORIGIN manquant) doit empêcher le démarrage tout de suite.
@@ -22,6 +22,10 @@ const server = app.listen(port, () => {
 // La base peut être injoignable au démarrage : on ne bloque pas le serveur pour autant.
 ensureAdmin().catch((err) =>
   console.error("Compte admin non synchronisé (base injoignable ?) :", err instanceof Error ? err.message : err),
+);
+
+purgeExpiredSessions().catch((err) =>
+  console.error("Purge des sessions impossible :", err instanceof Error ? err.message : err),
 );
 
 const shutdown = async () => {

@@ -4,9 +4,6 @@ import { FiMenu, FiMoon, FiSearch, FiSun, FiX } from "react-icons/fi";
 import { useSite } from "../context/SiteContext";
 import { useAuth } from "../context/AuthContext";
 
-/** Seules ces pages contiennent la section #contact */
-const CONTACT_ROUTES = ["/", "/a-propos"];
-
 export default function Navbar() {
   const { artistName, settings, theme, toggleTheme, setSearchOpen } = useSite();
   const [scrolled, setScrolled] = useState(false);
@@ -29,12 +26,6 @@ export default function Navbar() {
 
   useEffect(() => setMenuOpen(false), [location.pathname, location.hash]);
 
-  // Ailleurs que sur la galerie et « À propos », le lien renvoie à l'accueil :
-  // sinon il changeait le hash sans rien faire.
-  const contactTo = CONTACT_ROUTES.includes(location.pathname)
-    ? { pathname: location.pathname, hash: "#contact" }
-    : "/#contact";
-
   return (
     <header className={`navbar ${scrolled ? "navbar--scrolled" : ""} ${menuOpen ? "navbar--open" : ""}`}>
       <div className="navbar__inner">
@@ -48,7 +39,7 @@ export default function Navbar() {
             <li><NavLink to="/" end>Galerie</NavLink></li>
             <li><NavLink to="/a-propos">À propos</NavLink></li>
             <li><NavLink to="/bibliographie">Bibliographie</NavLink></li>
-            <li><Link to={contactTo}>Contact</Link></li>
+            <li><NavLink to="/contact">Contact</NavLink></li>
             {/* Sur mobile, les boutons de compte passent dans le menu */}
             {user ? (
               <>

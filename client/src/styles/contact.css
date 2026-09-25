@@ -1,0 +1,68 @@
+/* ---------- Page Contact ---------- */
+.contact-page { padding-top: var(--nav-h); }
+.contact-page__intro { display: flex; flex-direction: column; gap: 18px; padding-bottom: 10px; }
+.contact-page__body { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(28px, 5vw, 56px); align-items: start; padding-top: 10px; }
+
+.contact-form-card {
+  padding: clamp(26px, 4vw, 40px);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+.contact-form { display: flex; flex-direction: column; gap: 18px; }
+.contact-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+/* Reprend l'apparence de .field input (auth.css) pour la zone de texte */
+.contact-form textarea {
+  padding: 12px 14px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md);
+  color: var(--text); font-family: var(--font-ui); font-size: 1rem; line-height: 1.55;
+  letter-spacing: normal; text-transform: none; resize: vertical; min-height: 150px;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.contact-form textarea:focus { outline: none; border-color: var(--violet-500); box-shadow: 0 0 0 3px var(--glow); }
+.contact-form input::placeholder,
+.contact-form textarea::placeholder { color: var(--muted); opacity: 0.7; }
+
+.contact-form__count { margin-top: -10px; font-family: var(--font-ui); font-size: 0.75rem; color: var(--muted); text-align: right; }
+.contact-form__legal { font-family: var(--font-ui); font-size: 0.75rem; color: var(--muted); text-align: center; }
+
+/*
+ * Leurre anti-robot : sorti de l'écran plutôt que display:none, que certains
+ * robots savent détecter. aria-hidden et tabIndex=-1 l'écartent du clavier
+ * et des lecteurs d'écran.
+ */
+.contact-form__trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* Accusé de réception, à la place du formulaire */
+.contact-success { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 30px 10px; text-align: center; animation: pop 0.35s var(--ease-out); }
+.contact-success__icon {
+  display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(74, 222, 128, 0.12); border: 1px solid var(--good); color: var(--good); font-size: 1.5rem;
+}
+.contact-success h3 { font-size: 1.5rem; }
+.contact-success p { color: var(--text-2); max-width: 420px; }
+
+/* Colonne de droite : canaux directs et repères pratiques */
+.contact-aside { display: flex; flex-direction: column; gap: 20px; position: sticky; top: calc(var(--nav-h) + 20px); }
+.contact-aside__block { padding: 28px 26px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--gold-500); border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
+.contact-aside__title { font-size: 1.35rem; margin-bottom: 10px; }
+.contact-aside__block p { color: var(--text-2); }
+.contact-aside__actions { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+
+.contact-aside__facts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.contact-aside__facts li { display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); }
+.contact-aside__facts svg { flex-shrink: 0; margin-top: 3px; font-size: 1.15rem; color: var(--violet-400); }
+.contact-aside__facts div { display: flex; flex-direction: column; gap: 3px; }
+.contact-aside__facts strong { font-family: var(--font-ui); font-size: 0.82rem; letter-spacing: 0.04em; color: var(--text); }
+.contact-aside__facts span { font-family: var(--font-ui); font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+@media (max-width: 980px) {
+  .contact-page__body { grid-template-columns: 1fr; }
+  /* Collée, la colonne masquerait le formulaire une fois passée sous lui */
+  .contact-aside { position: static; }
+}
+
+@media (max-width: 560px) {
+  .contact-form__row { grid-template-columns: 1fr; }
+}

@@ -1,6 +1,37 @@
 /* ---------- Bibliographie ---------- */
 .biblio { padding-top: var(--nav-h); }
-.biblio__intro { display: flex; flex-direction: column; gap: 18px; padding-bottom: 20px; }
+.biblio__intro { display: flex; flex-direction: column; gap: 18px; }
+
+/* ---------- Hero : portrait + présentation ---------- */
+.biblio__hero { display: grid; grid-template-columns: minmax(240px, 340px) 1fr; gap: clamp(28px, 6vw, 72px); align-items: center; padding-bottom: 20px; }
+.biblio__portrait { position: relative; margin: 0; padding: 18px; }
+.biblio__portrait img {
+  display: block; width: 100%; height: auto; aspect-ratio: 305 / 464; object-fit: cover; object-position: center top;
+  border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+}
+.biblio__portrait figcaption {
+  display: flex; flex-direction: column; gap: 2px; margin-top: 16px; text-align: center;
+  font-family: var(--font-display); font-size: 1.15rem; color: var(--text);
+}
+.biblio__portrait figcaption span {
+  font-family: var(--font-ui); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+}
+
+/* Chiffres clés de la bibliographie */
+.biblio__figures { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 0; }
+.biblio__figures div {
+  display: flex; flex-direction: column-reverse; gap: 2px; padding: 12px 18px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+}
+.biblio__figures dt { font-family: var(--font-ui); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.biblio__figures dd {
+  margin: 0; font-family: var(--font-display); font-size: 1.5rem; line-height: 1;
+  background: linear-gradient(100deg, var(--gold-500), var(--violet-500));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.biblio__contact { font-family: var(--font-ui); font-size: 0.85rem; color: var(--muted); }
+.biblio__contact a { color: var(--violet-400); }
+.biblio__contact a:hover { text-decoration: underline; }
 .biblio__body { display: flex; flex-direction: column; gap: 44px; padding-top: 20px; }
 .biblio__year { display: grid; grid-template-columns: 140px 1fr; gap: 28px; align-items: start; }
 .biblio__year-title { font-size: clamp(1.8rem, 3.6vw, 2.4rem); font-style: italic; color: var(--gold-500); line-height: 1; }
@@ -9,8 +40,18 @@
 .biblio__item h3 { margin: 10px 0 4px; font-size: 1.25rem; }
 .biblio__item h3 a { text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 4px; }
 .biblio__item h3 a:hover { text-decoration-color: var(--violet-400); }
-.biblio__meta { font-family: var(--font-ui); font-size: 0.85rem; color: var(--muted); }
+.biblio__meta { display: flex; align-items: center; gap: 8px; font-family: var(--font-ui); font-size: 0.85rem; color: var(--muted); }
+.biblio__meta svg { flex-shrink: 0; color: var(--violet-400); }
+.biblio__item h3 a { display: inline-flex; align-items: baseline; gap: 8px; }
+.biblio__item h3 a svg { font-size: 0.8em; }
 .biblio__note { margin-top: 10px; color: var(--text-2); }
+
+@media (max-width: 900px) {
+  .biblio__hero { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .biblio__portrait { width: min(280px, 70vw); }
+  .biblio__intro { align-items: center; }
+  .biblio__figures { justify-content: center; }
+}
 
 @media (max-width: 760px) {
   .biblio__year { grid-template-columns: 1fr; gap: 14px; }

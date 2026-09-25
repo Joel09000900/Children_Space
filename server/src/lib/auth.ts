@@ -130,6 +130,19 @@ export async function endSession(req: Request, res: Response) {
   res.clearCookie(SESSION_COOKIE, sessionCookieOptions());
 }
 
+/**
+ * Supprime les sessions périmées.
+ *
+ * Une session n'était retirée que si son propre jeton était réutilisé : celles des
+ * visiteurs qui ne reviennent jamais restaient en base indéfiniment. Appelé au
+ * démarrage, ce nettoyage suffit pour un site de cette taille.
+ */
+export async function purgeExpiredSessions() {
+  const { count } = await prisma.session.deleteMany({ where: { expiresAt: { lt: new Date() } } });
+  if (count > 0) console.log(`Sessions expirées supprimées : ${count}`);
+  return count;
+}
+
 export async function getSessionUser(req: Request) {
   const token = readToken(req);
   if (!token) return null;

@@ -92,8 +92,8 @@ const settings: Record<string, string> = {
   about_intro: "Autodidacte, OliKrys peint depuis plusieurs années entre souvenirs d'enfance, scènes de rue et paysages d'Afrique de l'Ouest.",
   about_bio: "Son travail part presque toujours d'une observation précise : une lumière sur un mur, un geste, un reflet. Au fil des séances, le motif se simplifie et la couleur prend le relais. Chaque série explore une idée pendant une ou deux années avant de laisser place à la suivante.",
   about_quote: "Je ne cherche pas à copier ce que je vois, mais à garder la sensation qu'il m'a laissée.",
-  // À remplacer par les vraies coordonnées de l'agent (chiffres uniquement, indicatif compris)
-  whatsapp_number: "2250000000000",
+  // Chiffres uniquement, indicatif compris : whatsappLink() retire tout le reste
+  whatsapp_number: "2250566921793",
   facebook_url: "https://www.facebook.com/",
 };
 

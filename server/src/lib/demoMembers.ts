@@ -7,6 +7,12 @@
 /** Mot de passe commun à tous les comptes de démonstration (développement uniquement) */
 export const DEMO_MEMBER_PASSWORD = "demo1234";
 
+/**
+ * Domaine réservé aux comptes de démonstration (RFC 2606 : jamais attribué).
+ * Sert de marqueur pour les retirer avant la mise en ligne (`db:clean:demo`).
+ */
+export const DEMO_EMAIL_DOMAIN = "@example.com";
+
 interface DemoMemberSpec {
   name: string;
   email: string;

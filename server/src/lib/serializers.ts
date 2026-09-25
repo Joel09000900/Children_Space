@@ -22,6 +22,17 @@ export function toArtworkDTO(a: ArtworkWithRelations) {
   };
 }
 
+/**
+ * Préfixe réservé aux réglages internes.
+ * `GET /api/settings` sert la table entière : sans cette barrière, une clé ajoutée
+ * plus tard depuis Prisma Studio (jeton d'API, identifiant de service…) partirait
+ * telle quelle dans la réponse publique.
+ */
+export const PRIVATE_SETTING_PREFIX = "private_";
+
+/** Réglages publics, sous forme d'objet { clé: valeur } */
 export function settingsToObject(rows: { key: string; value: string }[]) {
-  return Object.fromEntries(rows.map((r) => [r.key, r.value])) as Record<string, string>;
+  return Object.fromEntries(
+    rows.filter((r) => !r.key.startsWith(PRIVATE_SETTING_PREFIX)).map((r) => [r.key, r.value]),
+  ) as Record<string, string>;
 }

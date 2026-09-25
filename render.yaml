@@ -1,0 +1,63 @@
+# Blueprint Render pour l'API OliKrys.
+# Le site React est déployé séparément sur Vercel (voir client/vercel.json).
+#
+# Render > New > Blueprint > pointer ce dépôt. Les variables marquées `sync: false`
+# ne sont PAS lues depuis ce fichier : Render les demande à la création, et elles
+# restent dans son coffre. Ne jamais écrire un secret ici, le fichier est versionné.
+services:
+  - type: web
+    name: olikrys-api
+    runtime: node
+    rootDir: server
+    plan: free
+    region: frankfurt
+
+    # --include=dev est indispensable : prisma et typescript sont des devDependencies,
+    # et le build en a besoin. Sans lui, `tsc` est introuvable et le déploiement échoue.
+    buildCommand: npm ci --include=dev && npm run build && npx prisma migrate deploy
+    startCommand: npm start
+
+    # Render interroge cette route : elle répond 503 si la base est injoignable,
+    # ce qui évite de router du trafic vers une instance incapable de servir.
+    healthCheckPath: /api/health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+
+      # Render place un reverse proxy devant l'application : sans ce réglage,
+      # req.ip vaut l'adresse du proxy et tous les visiteurs partagent un seul
+      # quota de limitation.
+      - key: TRUST_PROXY
+        value: "1"
+
+      # Le site (Vercel) et l'API (Render) sont sur deux domaines : le cookie de
+      # session doit passer en SameSite=None + Secure, sinon la connexion ne
+      # survit pas au rechargement de la page.
+      - key: CROSS_SITE_COOKIE
+        value: "true"
+
+      # PORT est injecté par Render, ne pas le définir ici.
+
+      # Chaîne Neon, avec ?sslmode=require
+      - key: DATABASE_URL
+        sync: false
+
+      # Domaine Vercel exact, sans barre finale. Plusieurs valeurs séparées par
+      # des virgules (domaine .vercel.app + domaine personnalisé).
+      # Obligatoire : l'API refuse de démarrer sans lui en production.
+      - key: CLIENT_ORIGIN
+        sync: false
+
+      # Compte administrateur, recréé à chaque démarrage depuis ces variables.
+      # ADMIN_PASSWORD : 12 caractères minimum, sinon l'API refuse de démarrer.
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NAME
+        sync: false

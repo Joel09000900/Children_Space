@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import { FaFacebookF, FaWhatsapp } from "react-icons/fa6";
+import { FiSend } from "react-icons/fi";
 import { useSite } from "../context/SiteContext";
 import { whatsappLink } from "../lib/contact";
 
@@ -13,6 +15,11 @@ export default function ContactCTA({ title = "Acquérir une œuvre" }: { title?:
         L'agent de {artistName} vous répond directement.
       </p>
       <div className="cta__actions">
+        {/* Le formulaire enregistre la demande : elle survit à la fermeture de l'onglet,
+            contrairement à une conversation WhatsApp jamais ouverte. */}
+        <Link className="btn btn--primary" to="/contact">
+          <FiSend /> Remplir le formulaire
+        </Link>
         <a className="btn btn--whatsapp" href={whatsappLink(settings.whatsapp_number, artistName)} target="_blank" rel="noreferrer">
           <FaWhatsapp /> Écrire sur WhatsApp
         </a>

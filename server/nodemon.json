@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/nodemon.json",
+  "watch": ["src", ".env", "prisma/schema.prisma"],
+  "ext": "ts,json",
+  "ignore": ["tests/**", "dist/**", "prisma/migrations/**", "**/*.test.ts"],
+  "exec": "tsx src/index.ts",
+  "delay": 300,
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

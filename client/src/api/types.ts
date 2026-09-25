@@ -60,6 +60,30 @@ export interface Publication {
 
 export type Settings = Record<string, string>;
 
+/** Corps du formulaire de contact public */
+export interface ContactInput {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  /** Champ leurre, laissé vide : il n'est rempli que par les robots */
+  website?: string;
+}
+
+export type ContactStatus = "NEW" | "READ" | "ARCHIVED";
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: ContactStatus;
+  createdAt: string;
+  /** Membre connecté au moment de l'envoi, s'il y en avait un */
+  author: { id: string; name: string } | null;
+}
+
 export interface AboutData {
   settings: Settings;
   heroImage: string | null;

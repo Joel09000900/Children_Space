@@ -123,11 +123,21 @@ body:not(.has-custom-cursor) .cursor-dot, body:not(.has-custom-cursor) .cursor-r
 }
 .ambient__modes button:hover { color: var(--text); }
 .ambient__modes button.is-active { background: var(--violet-500); color: #fff; }
+/* Ligne « en cours » : flèches de part et d'autre du titre */
+.ambient__now { display: flex; align-items: center; gap: 2px; }
+.ambient__step {
+  display: grid; place-items: center; width: 18px; height: 18px; flex-shrink: 0;
+  background: none; border: none; cursor: pointer; border-radius: 50%;
+  color: var(--muted); font-size: 0.9rem;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.ambient__step:hover { background: var(--surface-2); color: var(--text); }
+.ambient__count { color: var(--muted); }
 .ambient__label { display: flex; flex-direction: column; line-height: 1.1; font-family: var(--font-ui); }
-.ambient__label strong { font-size: 0.72rem; font-weight: 500; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ambient__label strong { font-size: 0.72rem; font-weight: 500; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ambient__label small { font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--violet-400); }
 .ambient__volume { width: 70px; accent-color: var(--violet-500); }
-@media (max-width: 600px) { .ambient__label, .ambient__volume { display: none; } .ambient { left: 16px; padding: 6px 8px 6px 12px; } }
+@media (max-width: 600px) { .ambient__now, .ambient__volume { display: none; } .ambient { left: 16px; padding: 6px 8px 6px 12px; } }
 
 /* ---------- Modale ---------- */
 .modal { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; padding: 20px; }

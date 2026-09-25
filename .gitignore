@@ -12,3 +12,11 @@ dist/
 *.wav
 *.aiff
 *.flac
+
+# Notes de séance : contiennent des identifiants en clair, ne doivent jamais partir sur GitHub
+sceance*.md
+
+# Médias sources : les masters audio restent locaux (voir medias-sources/README.md).
+# Les images d'origine, légères, sont versionnées.
+medias-sources/audio/*
+!medias-sources/audio/.gitkeep

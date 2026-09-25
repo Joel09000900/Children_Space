@@ -1,6 +1,26 @@
-import type { AboutData, AdminStats, Artwork, Collection, Paginated, Publication, Settings, User } from "./types";
+import type {
+  AboutData,
+  AdminStats,
+  Artwork,
+  Collection,
+  ContactInput,
+  ContactMessage,
+  ContactStatus,
+  Paginated,
+  Publication,
+  Settings,
+  User,
+} from "./types";
 
-const BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+/**
+ * Racine de l'API. Vide en développement : Vite relaie /api vers le serveur Node.
+ * En production séparée (site sur Vercel, API sur Render), VITE_API_URL porte
+ * l'URL complète du service Render.
+ *
+ * Les barres finales sont retirées : « https://api.example.com/ » produisait
+ * « https://api.example.com//api/artworks », que l'API renvoie en 404.
+ */
+const BASE = (import.meta.env.VITE_API_URL ?? "").trim().replace(/\/+$/, "");
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   // credentials: "include" est indispensable dès que l'API est sur un autre domaine,
@@ -16,12 +36,15 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 const get = <T>(path: string, signal?: AbortSignal) => request<T>(path, { signal });
 
-const post = <T>(path: string, body?: unknown) =>
+const send = <T>(method: "POST" | "PATCH", path: string, body?: unknown) =>
   request<T>(path, {
-    method: "POST",
+    method,
     headers: { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
+
+const post = <T>(path: string, body?: unknown) => send<T>("POST", path, body);
+const patch = <T>(path: string, body?: unknown) => send<T>("PATCH", path, body);
 
 /** Maximum accepté par l'API pour `limit` */
 const PAGE_SIZE = 100;
@@ -65,4 +88,11 @@ export const api = {
   logout: () => post<void>("/auth/logout"),
   adminStats: (days: number, signal?: AbortSignal) =>
     get<{ data: AdminStats }>(`/admin/stats?days=${days}`, signal).then((r) => r.data),
+
+  /** Formulaire public : le message est enregistré en base, aucune session n'est requise */
+  contact: (body: ContactInput) => post<{ data: { received: boolean } }>("/contact", body).then((r) => r.data),
+  adminMessages: (signal?: AbortSignal) =>
+    get<{ data: ContactMessage[]; meta: { unread: number } }>("/admin/messages", signal),
+  adminMessageStatus: (id: string, status: ContactStatus) =>
+    patch<{ data: ContactMessage }>(`/admin/messages/${id}`, { status }).then((r) => r.data),
 };
