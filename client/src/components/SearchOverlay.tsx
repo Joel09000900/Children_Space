@@ -5,11 +5,15 @@ import { api } from "../api/client";
 import type { Artwork } from "../api/types";
 import { useSite } from "../context/SiteContext";
 
+/** Nombre de suggestions affichées sous le champ */
+const MAX_RESULTS = 20;
+
 export default function SearchOverlay() {
   const { searchOpen, setSearchOpen } = useSite();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const input = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -24,18 +28,27 @@ export default function SearchOverlay() {
   // Recherche côté serveur avec un léger délai de frappe
   useEffect(() => {
     const q = query.trim();
+    setError(null);
     if (q.length < 2) {
       setResults([]);
+      setLoading(false);
       return;
     }
     const ctrl = new AbortController();
-    setLoading(true);
+    // `loading` ne passe à true qu'au départ réel de la requête : sinon il restait
+    // bloqué quand la frappe annulait le délai avant l'appel.
     const t = window.setTimeout(() => {
+      setLoading(true);
       api
-        .artworks({ q }, ctrl.signal)
+        .artworks({ q, limit: MAX_RESULTS }, ctrl.signal)
         .then((r) => setResults(r.data))
-        .catch(() => undefined)
-        .finally(() => setLoading(false));
+        .catch((err: Error) => {
+          // Une panne réseau affichait « aucun résultat » : on distingue les deux cas
+          if (!ctrl.signal.aborted) setError(err.message);
+        })
+        .finally(() => {
+          if (!ctrl.signal.aborted) setLoading(false);
+        });
     }, 250);
     return () => {
       window.clearTimeout(t);
@@ -50,6 +63,8 @@ export default function SearchOverlay() {
     setQuery("");
     navigate(`/?oeuvre=${encodeURIComponent(slug)}`);
   };
+
+  const typed = query.trim().length >= 2;
 
   return (
     <div className="search" role="dialog" aria-modal="true" aria-label="Recherche">
@@ -69,20 +84,26 @@ export default function SearchOverlay() {
           </button>
         </div>
         <ul className="search__results">
-          {query.trim().length >= 2 && !loading && results.length === 0 && (
+          {error && (
+            <li className="search__empty" role="alert">
+              Recherche indisponible : {error}
+            </li>
+          )}
+          {!error && typed && !loading && results.length === 0 && (
             <li className="search__empty">Aucune œuvre ne correspond à « {query.trim()} ».</li>
           )}
-          {results.map((a) => (
-            <li key={a.id}>
-              <button className="search__item" onClick={() => open(a.slug)}>
-                <img src={a.thumbUrl} alt="" loading="lazy" />
-                <span>
-                  <strong>{a.title}</strong>
-                  <small>{[a.collection?.name, a.technique, a.year].filter(Boolean).join(" · ")}</small>
-                </span>
-              </button>
-            </li>
-          ))}
+          {!error &&
+            results.map((a) => (
+              <li key={a.id}>
+                <button className="search__item" onClick={() => open(a.slug)}>
+                  <img src={a.thumbUrl} alt="" loading="lazy" />
+                  <span>
+                    <strong>{a.title}</strong>
+                    <small>{[a.collection?.name, a.technique, a.year].filter(Boolean).join(" · ")}</small>
+                  </span>
+                </button>
+              </li>
+            ))}
         </ul>
       </div>
     </div>

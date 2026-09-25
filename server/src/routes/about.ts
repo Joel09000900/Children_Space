@@ -24,14 +24,21 @@ router.get("/", async (_req, res) => {
 
   res.json({
     data: {
-      settings: await settingsToObject(settingRows),
+      settings: settingsToObject(settingRows),
       heroImage: portrait?.imageUrl ?? null,
       stats: { artworks: artworkCount, collections: collections.length, yearsActive },
       techniques: techniques.map(({ id, name, description, mastery }) => ({ id, name, description, mastery })),
       collections: collections.map(({ _count, createdAt, updatedAt, ...c }) => ({ ...c, artworkCount: _count.artworks })),
-      exhibitions: exhibitions.map((e) => ({
-        ...e,
-        upcoming: (e.endDate ?? e.startDate) >= now,
+      // Champs listés un à un : `createdAt` n'a pas à sortir de l'API
+      exhibitions: exhibitions.map(({ id, title, venue, city, kind, startDate, endDate }) => ({
+        id,
+        title,
+        venue,
+        city,
+        kind,
+        startDate,
+        endDate,
+        upcoming: (endDate ?? startDate) >= now,
       })),
     },
   });

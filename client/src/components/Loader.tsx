@@ -13,32 +13,32 @@ export default function Loader({ name }: { name: string }) {
   });
   const [progress, setProgress] = useState(0);
 
+  // L'updater reste pur : React peut le rejouer (StrictMode) sans déclencher d'effet de bord
   useEffect(() => {
     if (!visible) return;
     document.body.classList.add("is-loading");
     const id = window.setInterval(() => {
-      setProgress((p) => {
-        const next = Math.min(100, p + 9 + Math.random() * 18);
-        if (next >= 100) {
-          window.clearInterval(id);
-          window.setTimeout(() => {
-            setVisible(false);
-            document.body.classList.remove("is-loading");
-            try {
-              sessionStorage.setItem("olikrys-loaded", "1");
-            } catch {
-              /* ignoré */
-            }
-          }, 450);
-        }
-        return next;
-      });
+      setProgress((p) => Math.min(100, p + 9 + Math.random() * 18));
     }, 160);
     return () => {
       window.clearInterval(id);
       document.body.classList.remove("is-loading");
     };
   }, [visible]);
+
+  // La fermeture est un effet à part, déclenché quand la barre est pleine
+  useEffect(() => {
+    if (!visible || progress < 100) return;
+    const t = window.setTimeout(() => {
+      setVisible(false);
+      try {
+        sessionStorage.setItem("olikrys-loaded", "1");
+      } catch {
+        /* ignoré */
+      }
+    }, 450);
+    return () => window.clearTimeout(t);
+  }, [visible, progress]);
 
   if (!visible) return null;
   const step = STEPS[Math.min(STEPS.length - 1, Math.floor(progress / 26))];

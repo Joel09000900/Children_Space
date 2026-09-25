@@ -45,6 +45,19 @@ export interface Exhibition {
   upcoming: boolean;
 }
 
+export type PublicationKind = "BOOK" | "CATALOGUE" | "ARTICLE" | "INTERVIEW";
+
+export interface Publication {
+  id: string;
+  title: string;
+  kind: PublicationKind;
+  author: string | null;
+  source: string;
+  year: number;
+  url: string | null;
+  note: string | null;
+}
+
 export type Settings = Record<string, string>;
 
 export interface AboutData {
@@ -54,6 +67,33 @@ export interface AboutData {
   techniques: Technique[];
   collections: Collection[];
   exhibitions: Exhibition[];
+}
+
+export type Role = "ADMIN" | "MEMBER";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  /** Pseudo de connexion, renseigné pour l'admin */
+  username: string | null;
+  role: Role;
+  createdAt: string;
+}
+
+export interface SignupPoint {
+  date: string; // AAAA-MM-JJ
+  signups: number;
+  members: number;
+}
+
+export interface AdminStats {
+  days: number;
+  totalMembers: number;
+  periodSignups: number;
+  previousPeriodSignups: number;
+  series: SignupPoint[];
+  latest: User[];
 }
 
 export interface Paginated<T> {

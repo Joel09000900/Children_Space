@@ -1,13 +1,28 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
-  const [message, setMessage] = useState<string | null>(null);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  // Page demandée avant la redirection vers la connexion (ex. /admin)
+  const from = (location.state as { from?: string } | null)?.from;
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Aucun compte côté serveur pour l'instant : la connexion n'est pas vérifiée
-    setMessage("Les comptes ne sont pas encore reliés au serveur : la connexion n'est pas disponible.");
+    const data = new FormData(e.currentTarget);
+    setPending(true);
+    setError(null);
+    try {
+      const user = await login(String(data.get("identifier")), String(data.get("password")));
+      navigate(from ?? (user.role === "ADMIN" ? "/admin" : "/"), { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Connexion impossible");
+      setPending(false);
+    }
   };
 
   return (
@@ -19,15 +34,17 @@ export default function LoginPage() {
 
         <form className="auth__form" onSubmit={onSubmit}>
           <label className="field">
-            Adresse e-mail
-            <input name="email" type="email" autoComplete="email" required />
+            Identifiant ou e-mail
+            <input name="identifier" type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} required />
           </label>
           <label className="field">
             Mot de passe
             <input name="password" type="password" autoComplete="current-password" required />
           </label>
-          {message && <p className="auth__message auth__message--info" role="status">{message}</p>}
-          <button className="btn btn--primary btn--block" type="submit">Se connecter</button>
+          {error && <p className="auth__message auth__message--error" role="alert">{error}</p>}
+          <button className="btn btn--primary btn--block" type="submit" disabled={pending}>
+            {pending ? "Connexion…" : "Se connecter"}
+          </button>
         </form>
 
         <p className="auth__switch">Pas encore de compte ? <Link to="/inscription">S'inscrire</Link></p>

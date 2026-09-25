@@ -24,6 +24,12 @@
   --glow: rgba(139, 92, 246, 0.35);
   --glass: rgba(13, 13, 25, 0.6);
 
+  /* Graphiques (tableau de bord admin) */
+  --chart-series: #8b5cf6;
+  --chart-grid: #262636;
+  --good: #4ade80;
+  --bad: #f87171;
+
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "Cormorant Garamond", Georgia, serif;
   --font-ui: "Inter", system-ui, -apple-system, sans-serif;
@@ -54,4 +60,8 @@
   --glow: rgba(124, 58, 237, 0.2);
   --glass: rgba(255, 255, 255, 0.75);
   --shadow-lg: 0 12px 40px rgba(40, 20, 80, 0.14);
+  --chart-series: #7c3aed;
+  --chart-grid: #ebe7f5;
+  --good: #15803d;
+  --bad: #b91c1c;
 }

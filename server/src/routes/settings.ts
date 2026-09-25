@@ -7,7 +7,7 @@ const router = Router();
 /** GET /api/settings — paramètres publics sous forme d'objet { clé: valeur } */
 router.get("/", async (_req, res) => {
   const rows = await prisma.setting.findMany();
-  res.json({ data: await settingsToObject(rows) });
+  res.json({ data: settingsToObject(rows) });
 });
 
 export default router;

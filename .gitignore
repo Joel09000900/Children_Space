@@ -3,3 +3,6 @@ dist/
 .env
 *.log
 .DS_Store
+
+# Artefacts de build incrémental TypeScript (propres à chaque machine)
+*.tsbuildinfo

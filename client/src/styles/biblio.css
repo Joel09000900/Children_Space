@@ -1,0 +1,17 @@
+/* ---------- Bibliographie ---------- */
+.biblio { padding-top: var(--nav-h); }
+.biblio__intro { display: flex; flex-direction: column; gap: 18px; padding-bottom: 20px; }
+.biblio__body { display: flex; flex-direction: column; gap: 44px; padding-top: 20px; }
+.biblio__year { display: grid; grid-template-columns: 140px 1fr; gap: 28px; align-items: start; }
+.biblio__year-title { font-size: clamp(1.8rem, 3.6vw, 2.4rem); font-style: italic; color: var(--gold-500); line-height: 1; }
+.biblio__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.biblio__item { padding: 22px 24px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--violet-500); border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
+.biblio__item h3 { margin: 10px 0 4px; font-size: 1.25rem; }
+.biblio__item h3 a { text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 4px; }
+.biblio__item h3 a:hover { text-decoration-color: var(--violet-400); }
+.biblio__meta { font-family: var(--font-ui); font-size: 0.85rem; color: var(--muted); }
+.biblio__note { margin-top: 10px; color: var(--text-2); }
+
+@media (max-width: 760px) {
+  .biblio__year { grid-template-columns: 1fr; gap: 14px; }
+}

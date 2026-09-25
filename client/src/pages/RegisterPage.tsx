@@ -1,20 +1,29 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
-
-type Message = { type: "error" | "info"; text: string };
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function RegisterPage() {
-  const [message, setMessage] = useState<Message | null>(null);
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     if (data.get("password") !== data.get("confirm")) {
-      setMessage({ type: "error", text: "Les deux mots de passe ne correspondent pas." });
+      setError("Les deux mots de passe ne correspondent pas.");
       return;
     }
-    // Aucun compte côté serveur pour l'instant : rien n'est enregistré
-    setMessage({ type: "info", text: "Les comptes ne sont pas encore reliés au serveur : votre inscription n'a pas été enregistrée." });
+    setPending(true);
+    setError(null);
+    try {
+      await register(String(data.get("name")), String(data.get("email")), String(data.get("password")));
+      navigate("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Inscription impossible");
+      setPending(false);
+    }
   };
 
   return (
@@ -27,7 +36,7 @@ export default function RegisterPage() {
         <form className="auth__form" onSubmit={onSubmit}>
           <label className="field">
             Nom
-            <input name="name" type="text" autoComplete="name" required />
+            <input name="name" type="text" autoComplete="name" maxLength={80} required />
           </label>
           <label className="field">
             Adresse e-mail
@@ -41,8 +50,10 @@ export default function RegisterPage() {
             Confirmer le mot de passe
             <input name="confirm" type="password" autoComplete="new-password" minLength={8} required />
           </label>
-          {message && <p className={`auth__message auth__message--${message.type}`} role="status">{message.text}</p>}
-          <button className="btn btn--primary btn--block" type="submit">Créer mon compte</button>
+          {error && <p className="auth__message auth__message--error" role="alert">{error}</p>}
+          <button className="btn btn--primary btn--block" type="submit" disabled={pending}>
+            {pending ? "Création du compte…" : "Créer mon compte"}
+          </button>
         </form>
 
         <p className="auth__switch">Déjà inscrit ? <Link to="/connexion">Se connecter</Link></p>

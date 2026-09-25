@@ -4,7 +4,7 @@
  * Les images proviennent d'Unsplash (licence Unsplash) et servent de visuels provisoires.
  */
 import "dotenv/config";
-import { PrismaClient, ExhibitionKind } from "@prisma/client";
+import { PrismaClient, ExhibitionKind, PublicationKind } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
@@ -73,6 +73,17 @@ const exhibitions = [
     startDate: new Date("2022-09-15"), endDate: null },
 ];
 
+const publications = [
+  { title: "Catalogue de l'exposition personnelle (exemple)", kind: PublicationKind.CATALOGUE, author: null,
+    source: "Galerie à renseigner", year: 2026, note: "Texte de présentation et reproductions des œuvres exposées." },
+  { title: "Portrait d'artiste (exemple)", kind: PublicationKind.ARTICLE, author: "Auteur à renseigner",
+    source: "Magazine à renseigner", year: 2024, note: null },
+  { title: "Entretien autour de la série Songes Intérieurs (exemple)", kind: PublicationKind.INTERVIEW, author: null,
+    source: "Média à renseigner", year: 2023, note: null },
+  { title: "Peintres d'Afrique de l'Ouest (exemple)", kind: PublicationKind.BOOK, author: "Auteur à renseigner",
+    source: "Éditeur à renseigner", year: 2023, note: "Ouvrage collectif, notice consacrée à l'artiste." },
+];
+
 const settings: Record<string, string> = {
   artist_name: "OliKrys",
   artist_role: "Artiste peintre",
@@ -91,6 +102,7 @@ async function main() {
   await prisma.collection.deleteMany();
   await prisma.technique.deleteMany();
   await prisma.exhibition.deleteMany();
+  await prisma.publication.deleteMany();
   await prisma.setting.deleteMany();
 
   for (const c of collections) await prisma.collection.create({ data: c });
@@ -115,9 +127,10 @@ async function main() {
   }
 
   await prisma.exhibition.createMany({ data: exhibitions });
+  await prisma.publication.createMany({ data: publications });
   await prisma.setting.createMany({ data: Object.entries(settings).map(([key, value]) => ({ key, value })) });
 
-  console.log(`Seed terminé : ${artworks.length} œuvres, ${collections.length} collections.`);
+  console.log(`Seed terminé : ${artworks.length} œuvres, ${collections.length} collections, ${publications.length} publications.`);
 }
 
 main()

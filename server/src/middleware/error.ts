@@ -2,10 +2,17 @@ import type { ErrorRequestHandler, RequestHandler } from "express";
 import { ZodError } from "zod";
 
 export class HttpError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
     super(message);
   }
 }
+
+/** Violation de contrainte d'unicité Prisma (deux comptes avec le même e-mail, par exemple) */
+export const isUniqueViolation = (err: unknown) =>
+  typeof err === "object" && err !== null && (err as { code?: unknown }).code === "P2002";
 
 export const notFound: RequestHandler = (req, _res, next) => {
   next(new HttpError(404, `Route introuvable : ${req.method} ${req.originalUrl}`));

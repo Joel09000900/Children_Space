@@ -83,6 +83,30 @@ model Exhibition {
   @@map("exhibitions")
 }
 
+enum PublicationKind {
+  BOOK
+  CATALOGUE
+  ARTICLE
+  INTERVIEW
+}
+
+/// Référence de la bibliographie : livre, catalogue, article ou entretien consacré à l'artiste
+model Publication {
+  id        String          @id @default(cuid())
+  title     String
+  kind      PublicationKind @default(ARTICLE)
+  author    String?
+  /// Éditeur, revue ou média
+  source    String
+  year      Int
+  url       String?
+  note      String?
+  createdAt DateTime        @default(now())
+
+  @@index([year])
+  @@map("publications")
+}
+
 /// Paramètres clé/valeur (numéro WhatsApp, page Facebook, textes du site…)
 model Setting {
   key       String   @id
@@ -90,4 +114,40 @@ model Setting {
   updatedAt DateTime @updatedAt
 
   @@map("settings")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+/// Compte du site : membres inscrits et administrateur (défini dans .env)
+model User {
+  id String @id @default(cuid())
+  name String
+  email String @unique
+  /// Pseudo de connexion, alternative à l'e-mail. Renseigné pour l'admin (ADMIN_USERNAME).
+  /// Stocké en minuscules pour que la comparaison soit insensible à la casse.
+  username String? @unique
+  passwordHash String
+  role Role @default(MEMBER)
+  sessions Session[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+  @@map("users")
+}
+
+/// Session de connexion ; seul le hash du jeton (cookie) est stocké
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
 }

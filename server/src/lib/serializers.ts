@@ -22,6 +22,6 @@ export function toArtworkDTO(a: ArtworkWithRelations) {
   };
 }
 
-export async function settingsToObject(rows: { key: string; value: string }[]) {
+export function settingsToObject(rows: { key: string; value: string }[]) {
   return Object.fromEntries(rows.map((r) => [r.key, r.value])) as Record<string, string>;
 }

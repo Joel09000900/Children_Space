@@ -22,7 +22,8 @@ export default function GalleryPage() {
   const [index, setIndex] = useState(0);
 
   const collections = useAsync((s) => api.collections(s), []);
-  const artworks = useAsync((s) => api.artworks({ collection: filter }, s).then((r) => r.data), [filter]);
+  // allArtworks suit la pagination : la galerie n'est plus tronquée à 50 œuvres
+  const artworks = useAsync((s) => api.allArtworks({ collection: filter }, s), [filter]);
   const list: Artwork[] = useMemo(() => artworks.data ?? [], [artworks.data]);
 
   useReveal([list, view]);
@@ -37,6 +38,9 @@ export default function GalleryPage() {
   useEffect(() => {
     if (openSlug && !artworks.loading && modalIndex === -1 && filter !== "all") setFilter("all");
   }, [openSlug, artworks.loading, modalIndex, filter]);
+
+  // Slug absent de toute la galerie : sans message, la page restait muette
+  const slugMissing = !!openSlug && !artworks.loading && !artworks.error && modalIndex === -1 && filter === "all";
 
   const openAt = useCallback(
     (i: number) => {
@@ -83,6 +87,14 @@ export default function GalleryPage() {
 
         {artworks.loading && !artworks.data && <p className="state">Accrochage des œuvres…</p>}
         {artworks.error && <p className="state state--error">Impossible de charger la galerie : {artworks.error}</p>}
+        {slugMissing && (
+          <p className="state state--error">
+            L'œuvre « {openSlug} » est introuvable.{" "}
+            <button className="btn btn--ghost btn--sm" onClick={close}>
+              Voir toute la galerie
+            </button>
+          </p>
+        )}
         {!artworks.loading && !artworks.error && list.length === 0 && (
           <p className="state">Aucune œuvre dans cette collection pour le moment.</p>
         )}

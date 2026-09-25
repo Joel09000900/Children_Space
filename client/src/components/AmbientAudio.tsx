@@ -9,10 +9,15 @@ const CHORDS = [
   [123.47, 185.0, 246.94, 311.13],
 ];
 
+const CHORD_INTERVAL = 6000;
+
 interface Engine {
   ctx: AudioContext;
   master: GainNode;
-  timer: number;
+  start: () => void;
+  pause: () => Promise<void>;
+  resume: () => Promise<void>;
+  dispose: () => void;
 }
 
 function createEngine(volume: number): Engine {
@@ -55,9 +60,37 @@ function createEngine(volume: number): Engine {
     index++;
   };
 
-  playChord();
-  const timer = window.setInterval(playChord, 6000);
-  return { ctx, master, timer };
+  let timer = 0;
+  const start = () => {
+    if (timer) return;
+    playChord();
+    timer = window.setInterval(playChord, CHORD_INTERVAL);
+  };
+  const stopTimer = () => {
+    window.clearInterval(timer);
+    timer = 0;
+  };
+
+  return {
+    ctx,
+    master,
+    start,
+    // En pause, ctx.currentTime est figé : laisser la minuterie tourner empilait
+    // des oscillateurs qui ne se terminaient jamais et repartaient tous ensemble
+    // à la reprise (pic de volume et fuite mémoire).
+    pause: async () => {
+      stopTimer();
+      await ctx.suspend();
+    },
+    resume: async () => {
+      await ctx.resume();
+      start();
+    },
+    dispose: () => {
+      stopTimer();
+      void ctx.close();
+    },
+  };
 }
 
 /** Widget « Ambiance » : musique d'ambiance générée par Web Audio, lancée à la demande */
@@ -66,12 +99,7 @@ export default function AmbientAudio() {
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
 
-  useEffect(() => () => {
-    if (engine.current) {
-      window.clearInterval(engine.current.timer);
-      engine.current.ctx.close();
-    }
-  }, []);
+  useEffect(() => () => engine.current?.dispose(), []);
 
   useEffect(() => {
     if (engine.current) engine.current.master.gain.setTargetAtTime(volume, engine.current.ctx.currentTime, 0.1);
@@ -79,12 +107,14 @@ export default function AmbientAudio() {
 
   const toggle = async () => {
     if (!engine.current) {
-      engine.current = createEngine(volume);
+      const created = createEngine(volume);
+      engine.current = created;
+      created.start();
       setPlaying(true);
       return;
     }
-    if (playing) await engine.current.ctx.suspend();
-    else await engine.current.ctx.resume();
+    if (playing) await engine.current.pause();
+    else await engine.current.resume();
     setPlaying(!playing);
   };
 
