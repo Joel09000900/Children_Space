@@ -31,6 +31,24 @@ export async function verifyPassword(password: string, stored: string) {
   return crypto.timingSafeEqual(actual, expected);
 }
 
+// Hash d'un mot de passe aléatoire, calculé une seule fois et jamais comparé pour de vrai.
+// Il sert uniquement à consommer du temps de calcul quand le compte n'existe pas.
+let dummyHash: Promise<string> | null = null;
+const getDummyHash = () => (dummyHash ??= hashPassword(crypto.randomBytes(32).toString("base64")));
+
+/**
+ * Vérifie un mot de passe en consommant la même durée, que le compte existe ou non.
+ *
+ * Sans cela, un identifiant inconnu renvoyait immédiatement (aucun scrypt exécuté)
+ * alors qu'un identifiant connu coûtait ~350 ms : le chronomètre révélait donc
+ * quels comptes existent, malgré un message d'erreur identique.
+ */
+export async function verifyPasswordConstantTime(password: string, stored: string | null | undefined) {
+  if (stored) return verifyPassword(password, stored);
+  await verifyPassword(password, await getDummyHash());
+  return false;
+}
+
 /** E-mails et pseudos sont stockés en minuscules : la connexion est insensible à la casse */
 export const normalizeIdentifier = (value: string) => value.trim().toLowerCase();
 

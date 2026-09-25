@@ -77,7 +77,30 @@ npm --prefix server test          # une passe
 npm --prefix server run test:watch
 ```
 
-37 tests couvrent le hachage des mots de passe, la configuration du compte admin, les options du cookie de session, les origines CORS, la limitation des tentatives, les séries du tableau de bord et les 20 comptes de démonstration. **Aucune base de données n'est nécessaire** : la logique testée est volontairement séparée de Prisma et d'Express.
+55 tests couvrent le hachage des mots de passe, la vérification à temps constant (anti-énumération), la configuration du compte admin, les options du cookie de session, les origines CORS, la politique de sécurité du contenu, le contrôle d'`Origin` (défense CSRF), la limitation des tentatives, les séries du tableau de bord et les 20 comptes de démonstration. **Aucune base de données n'est nécessaire** : la logique testée est volontairement séparée de Prisma et d'Express.
+
+## Musique
+
+Le widget en bas à gauche propose deux sources, au choix du visiteur :
+
+- **Ambiance** — nappe d'accords générée en direct par Web Audio, aucun fichier téléchargé.
+- **Morceau** — un fichier audio servi depuis `client/public/audio/`.
+
+Grâce à `preload="none"`, rien n'est téléchargé tant que le visiteur n'a pas choisi « Morceau ».
+
+### Ajouter ou remplacer un morceau
+
+Les masters non compressés (`.wav`, `.aiff`, `.flac`) sont exclus du dépôt par `.gitignore` :
+un master de 3 minutes pèse une trentaine de mégaoctets et alourdirait l'historique git
+définitivement. Seuls les fichiers web convertis sont versionnés.
+
+```bash
+ffmpeg -i "mon-master.wav" -codec:a libmp3lame -b:a 192k client/public/audio/mon-titre.mp3
+ffmpeg -i "mon-master.wav" -codec:a libvorbis  -q:a 5    client/public/audio/mon-titre.ogg
+```
+
+Renseignez ensuite le titre, l'artiste et les deux chemins dans la constante `TRACK`
+de `client/src/components/AmbientAudio.tsx`.
 
 ## Production
 
@@ -97,6 +120,12 @@ Le cookie de session ne circule d'un domaine à l'autre que si les trois conditi
 3. `VITE_API_URL` pointe vers l'URL complète de l'API côté client.
 
 Sans cela, la connexion semble réussir puis se perd au premier rechargement.
+
+`CLIENT_ORIGIN` a un second rôle, plus strict : toute requête modifiante (`POST`, `PUT`,
+`DELETE`) dont l'en-tête `Origin` n'y figure pas est refusée en **403 « Origine non
+autorisée »**. C'est la défense CSRF, et elle reste active même en `SameSite=None`.
+Une origine oubliée dans cette liste se traduit donc par une connexion impossible,
+et non par une simple erreur CORS dans la console.
 
 ## Structure
 
@@ -146,7 +175,9 @@ olikrys/
 | GET | `/api/auth/me` | Compte connecté, ou `null` |
 | GET | `/api/admin/stats` | Statistiques d'inscription, admin uniquement. Filtre : `days` (7, 30 ou 90) |
 
-`/api/auth/login` est limité à 10 tentatives par adresse IP toutes les 10 minutes, `/api/auth/register` à 5 par heure.
+`/api/auth/login` est limité à 10 tentatives par adresse IP toutes les 10 minutes, `/api/auth/register` à 5 par heure. La connexion consomme le même temps de calcul que l'identifiant existe ou non, afin que la durée de réponse ne révèle pas quels comptes sont inscrits.
+
+Les méthodes `GET` et `HEAD` restent ouvertes à toutes les origines ; les requêtes modifiantes sont soumises au contrôle d'`Origin` décrit plus haut.
 
 ## Fonctionnalités reprises
 
@@ -158,7 +189,7 @@ olikrys/
 - Recherche d'œuvres côté serveur
 - Thème sombre / clair mémorisé
 - Curseur personnalisé sur ordinateur
-- Ambiance musicale générée en Web Audio (aucun fichier audio)
+- Widget sonore à deux sources : ambiance générée en Web Audio, ou morceau enregistré
 - Page À propos alimentée par la base : chiffres clés, démarche, techniques, expositions, collections
 - Section contact WhatsApp / Facebook et pied de page
 

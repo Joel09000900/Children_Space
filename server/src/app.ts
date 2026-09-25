@@ -13,6 +13,7 @@ import auth from "./routes/auth";
 import admin from "./routes/admin";
 import { prisma } from "./lib/prisma";
 import { errorHandler, notFound } from "./middleware/error";
+import { verifyOrigin } from "./middleware/origin";
 
 /** Origines autorisées par défaut quand CLIENT_ORIGIN n'est pas renseigné (développement) */
 const DEV_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"];
@@ -76,9 +77,13 @@ export function createApp() {
       crossOriginEmbedderPolicy: false,
     }),
   );
+  const origins = allowedOrigins();
   // credentials: true est indispensable pour que le cookie de session circule
   // quand le front est servi depuis un autre domaine que l'API.
-  app.use(cors({ origin: allowedOrigins(), credentials: true }));
+  app.use(cors({ origin: origins, credentials: true }));
+  // Défense CSRF : une requête modifiante venue d'une origine inconnue est refusée,
+  // même si le navigateur y a joint le cookie de session.
+  app.use("/api", verifyOrigin(origins));
   app.use(express.json({ limit: "100kb" }));
   if (process.env.NODE_ENV !== "test") app.use(morgan("dev"));
 

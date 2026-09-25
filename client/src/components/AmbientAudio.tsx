@@ -11,6 +11,16 @@ const CHORDS = [
 
 const CHORD_INTERVAL = 6000;
 
+/** Morceau servi depuis client/public/audio (le master .wav reste hors du dépôt) */
+const TRACK = {
+  title: "Tout va changer",
+  artist: "Artiste inconnu",
+  mp3: "/audio/tout-va-changer.mp3",
+  ogg: "/audio/tout-va-changer.ogg",
+};
+
+type Mode = "ambiance" | "morceau";
+
 interface Engine {
   ctx: AudioContext;
   master: GainNode;
@@ -93,43 +103,99 @@ function createEngine(volume: number): Engine {
   };
 }
 
-/** Widget « Ambiance » : musique d'ambiance générée par Web Audio, lancée à la demande */
+/** Widget « Ambiance » : nappe générée en Web Audio, ou morceau enregistré, au choix */
 export default function AmbientAudio() {
   const engine = useRef<Engine | null>(null);
+  const audio = useRef<HTMLAudioElement | null>(null);
+  const [mode, setMode] = useState<Mode>("ambiance");
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
+  const [unavailable, setUnavailable] = useState(false);
 
   useEffect(() => () => engine.current?.dispose(), []);
 
+  // Le volume pilote les deux sources, quelle que soit celle qui joue
   useEffect(() => {
     if (engine.current) engine.current.master.gain.setTargetAtTime(volume, engine.current.ctx.currentTime, 0.1);
+    if (audio.current) audio.current.volume = volume;
   }, [volume]);
 
+  /** Bascule de source : on arrête toujours l'autre avant de changer */
+  const switchMode = async (next: Mode) => {
+    if (next === mode) return;
+    if (engine.current) await engine.current.pause();
+    audio.current?.pause();
+    setPlaying(false);
+    setUnavailable(false);
+    setMode(next);
+  };
+
   const toggle = async () => {
-    if (!engine.current) {
-      const created = createEngine(volume);
-      engine.current = created;
-      created.start();
-      setPlaying(true);
+    if (mode === "ambiance") {
+      if (!engine.current) {
+        const created = createEngine(volume);
+        engine.current = created;
+        created.start();
+        setPlaying(true);
+        return;
+      }
+      if (playing) await engine.current.pause();
+      else await engine.current.resume();
+      setPlaying(!playing);
       return;
     }
-    if (playing) await engine.current.pause();
-    else await engine.current.resume();
-    setPlaying(!playing);
+
+    const el = audio.current;
+    if (!el) return;
+    if (playing) {
+      el.pause();
+      setPlaying(false);
+      return;
+    }
+    try {
+      el.volume = volume;
+      await el.play();
+      setUnavailable(false);
+      setPlaying(true);
+    } catch {
+      // Fichier absent, format refusé, ou lecture bloquée par le navigateur
+      setUnavailable(true);
+      setPlaying(false);
+    }
   };
+
+  const isTrack = mode === "morceau";
+  const status = unavailable ? "Indisponible" : playing ? "En lecture" : "En pause";
 
   return (
     <div className={`ambient ${playing ? "ambient--on" : ""}`}>
       <span className="ambient__bars" aria-hidden="true">
         <i /><i /><i /><i /><i />
       </span>
-      <span className="ambient__label">
-        <strong>Ambiance</strong>
-        <small>{playing ? "En lecture" : "En pause"}</small>
-      </span>
-      <button className="icon-btn icon-btn--sm" onClick={toggle} aria-label={playing ? "Couper l'ambiance" : "Lancer l'ambiance"}>
+
+      <div className="ambient__main">
+        <div className="ambient__modes" role="group" aria-label="Source sonore">
+          <button type="button" className={!isTrack ? "is-active" : ""} aria-pressed={!isTrack} onClick={() => switchMode("ambiance")}>
+            Ambiance
+          </button>
+          <button type="button" className={isTrack ? "is-active" : ""} aria-pressed={isTrack} onClick={() => switchMode("morceau")}>
+            Morceau
+          </button>
+        </div>
+        <span className="ambient__label">
+          <strong>{isTrack ? TRACK.title : "Ambiance"}</strong>
+          <small>{isTrack && !unavailable && !playing ? TRACK.artist : status}</small>
+        </span>
+      </div>
+
+      <button
+        className="icon-btn icon-btn--sm"
+        onClick={toggle}
+        aria-label={playing ? "Couper le son" : isTrack ? `Écouter « ${TRACK.title} »` : "Lancer l'ambiance"}
+      >
         {playing ? <FiVolume2 /> : <FiVolumeX />}
       </button>
+
       <input
         className="ambient__volume"
         type="range"
@@ -140,6 +206,12 @@ export default function AmbientAudio() {
         onChange={(e) => setVolume(Number(e.target.value))}
         aria-label="Volume"
       />
+
+      {/* preload="none" : aucun octet téléchargé tant que le visiteur n'a pas demandé le morceau */}
+      <audio ref={audio} loop preload="none" onEnded={() => setPlaying(false)}>
+        <source src={TRACK.mp3} type="audio/mpeg" />
+        <source src={TRACK.ogg} type="audio/ogg" />
+      </audio>
     </div>
   );
 }

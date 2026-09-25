@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hashPassword, verifyPassword } from "../src/lib/auth";
+import { hashPassword, verifyPassword, verifyPasswordConstantTime } from "../src/lib/auth";
 
 describe("hachage des mots de passe", () => {
   it("accepte le bon mot de passe", async () => {
@@ -30,5 +30,31 @@ describe("hachage des mots de passe", () => {
     for (const bad of ["", "nimporte-quoi", "bcrypt$a$b", "scrypt$", "scrypt$sel$"]) {
       expect(await verifyPassword("0000", bad)).toBe(false);
     }
+  });
+});
+
+describe("vérification à temps constant (anti-énumération)", () => {
+  it("garde le même verdict qu'une vérification normale", async () => {
+    const stored = await hashPassword("bon-mot-de-passe");
+    expect(await verifyPasswordConstantTime("bon-mot-de-passe", stored)).toBe(true);
+    expect(await verifyPasswordConstantTime("mauvais", stored)).toBe(false);
+  });
+
+  it("renvoie false quand le compte n'existe pas", async () => {
+    expect(await verifyPasswordConstantTime("peu importe", null)).toBe(false);
+    expect(await verifyPasswordConstantTime("peu importe", undefined)).toBe(false);
+  });
+
+  it("consomme du temps de calcul même sans compte trouvé", async () => {
+    // Le cœur du correctif : sans scrypt, un identifiant inconnu répondait
+    // instantanément et trahissait ainsi l'absence de compte.
+    await verifyPasswordConstantTime("amorce", null); // amorce le hash factice
+
+    const start = performance.now();
+    await verifyPasswordConstantTime("peu importe", null);
+    const elapsed = performance.now() - start;
+
+    // Seuil volontairement bas : on prouve que scrypt tourne, sans test fragile
+    expect(elapsed).toBeGreaterThan(20);
   });
 });

@@ -8,7 +8,7 @@ import {
   startSession,
   toUserDTO,
   userIdentifierWhere,
-  verifyPassword,
+  verifyPasswordConstantTime,
 } from "../lib/auth";
 import { HttpError, isUniqueViolation } from "../middleware/error";
 import { rateLimit } from "../middleware/rateLimit";
@@ -59,7 +59,10 @@ router.post("/register", registerLimit, async (req, res) => {
 router.post("/login", loginLimit, async (req, res) => {
   const { identifier, password } = loginBody.parse(req.body);
   const user = await prisma.user.findFirst({ where: userIdentifierWhere(identifier) });
-  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+  // La vérification est lancée dans tous les cas, y compris sans compte trouvé :
+  // le temps de réponse ne doit pas trahir l'existence de l'identifiant.
+  const passwordOk = await verifyPasswordConstantTime(password, user?.passwordHash);
+  if (!user || !passwordOk) {
     throw new HttpError(401, "Identifiant ou mot de passe incorrect");
   }
   await startSession(res, user.id);

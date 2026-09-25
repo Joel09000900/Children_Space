@@ -6,3 +6,9 @@ dist/
 
 # Artefacts de build incrémental TypeScript (propres à chaque machine)
 *.tsbuildinfo
+
+# Masters audio non compressés : trop volumineux pour un dépôt git.
+# Seuls les fichiers web convertis (client/public/audio/*.mp3, *.ogg) sont versionnés.
+*.wav
+*.aiff
+*.flac
