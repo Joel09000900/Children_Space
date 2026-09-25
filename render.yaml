@@ -47,7 +47,10 @@ services:
 
       # Domaine Vercel exact, sans barre finale. Plusieurs valeurs séparées par
       # des virgules (domaine .vercel.app + domaine personnalisé).
-      # Obligatoire : l'API refuse de démarrer sans lui en production.
+      #
+      # OBLIGATOIRE : laissée vide, l'API s'arrête au démarrage et le déploiement
+      # échoue. Déployez donc le site sur Vercel AVANT ce service, pour connaître
+      # son domaine. Voir la section Déploiement du README.
       - key: CLIENT_ORIGIN
         sync: false
 

@@ -184,7 +184,26 @@ Base de données : **Neon**. API : **Render** (`render.yaml`). Site : **Vercel**
 (`client/vercel.json`). Les deux fichiers de configuration sont versionnés ; aucun
 secret n'y figure, ils sont saisis dans l'interface de chaque plateforme.
 
-### 1. Render — l'API
+**Faire Vercel en premier.** L'API refuse de démarrer en production sans
+`CLIENT_ORIGIN`, et cette valeur est le domaine Vercel : le déployer en premier
+évite un premier déploiement Render en échec.
+
+### 1. Vercel — le site
+
+New Project > importer ce dépôt > **Root Directory = `client`**. Vercel lit
+`client/vercel.json` pour le reste (build Vite, dossier `dist`, réécriture SPA,
+en-têtes de sécurité). Ne rien saisir comme variable à ce stade.
+
+Le premier déploiement réussit, mais le site affiche « Impossible de charger la
+page » : il n'a pas encore d'API à appeler. C'est attendu, on le corrige à l'étape 3.
+
+Notez le domaine obtenu, par exemple `https://olikrys.vercel.app`.
+
+`vercel.json` contient la règle qui renvoie toutes les routes vers `index.html`.
+Sans elle, ouvrir `/contact` ou `/bibliographie` directement — ou simplement
+rafraîchir la page — donnerait un 404 : ces routes n'existent que côté navigateur.
+
+### 2. Render — l'API
 
 New > Blueprint > sélectionner ce dépôt. Render lit `render.yaml` et demande les
 variables marquées `sync: false` :
@@ -192,7 +211,7 @@ variables marquées `sync: false` :
 | Variable | Valeur |
 | --- | --- |
 | `DATABASE_URL` | chaîne Neon *pooled*, avec `sslmode=require` |
-| `CLIENT_ORIGIN` | à laisser vide pour l'instant — voir l'étape 3 |
+| `CLIENT_ORIGIN` | le domaine Vercel de l'étape 1, **sans barre finale** |
 | `ADMIN_EMAIL`, `ADMIN_USERNAME`, `ADMIN_NAME` | identifiants de connexion |
 | `ADMIN_PASSWORD` | **12 caractères minimum**, sinon l'API refuse de démarrer |
 
@@ -208,39 +227,23 @@ données existantes. Notez l'URL obtenue, par exemple
 > environ 50 secondes à se réveiller. Le premier visiteur voit « Chargement… »
 > pendant ce temps. La route `/api/health` sert de réveil manuel.
 
-### 2. Vercel — le site
+### 3. Relier le site à l'API
 
-New Project > sélectionner ce dépôt, puis **Root Directory = `client`**. Vercel lit
-`client/vercel.json` pour le reste (build Vite, dossier `dist`, en-têtes de sécurité).
-Une seule variable à saisir :
+Retourner sur Vercel > Settings > Environment Variables :
 
 ```
 VITE_API_URL = https://olikrys-api.onrender.com
 ```
 
 Sans barre finale et sans `/api` : le client l'ajoute lui-même. Cette variable est
-intégrée au bundle au moment du build — **changer sa valeur impose un redéploiement**.
-
-`vercel.json` contient aussi la règle qui renvoie toutes les routes vers
-`index.html`. Sans elle, ouvrir `/contact` ou `/bibliographie` directement (ou
-simplement rafraîchir la page) donnerait un 404 : ces routes n'existent que côté
-navigateur.
-
-### 3. Boucler la configuration
-
-Retourner sur Render et renseigner `CLIENT_ORIGIN` avec le domaine Vercel obtenu :
-
-```
-CLIENT_ORIGIN = https://olikrys.vercel.app
-```
-
-Plusieurs domaines se séparent par une virgule (domaine `.vercel.app` **et** domaine
-personnalisé). Render redémarre l'API automatiquement.
+intégrée au bundle au moment du build, donc **il faut redéployer** : Deployments >
+dernier déploiement > Redeploy.
 
 > Les déploiements de prévisualisation Vercel ont une URL différente par branche.
 > Elles ne sont pas dans `CLIENT_ORIGIN` : la connexion et le formulaire de contact
 > y seront bloqués. C'est volontaire — ajoutez l'URL à la liste si vous devez tester
-> une préversion.
+> une préversion. Plusieurs domaines se séparent par une virgule (domaine
+> `.vercel.app` **et** domaine personnalisé).
 
 ### 4. Vérifier la mise en ligne
 
