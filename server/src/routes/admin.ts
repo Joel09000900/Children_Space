@@ -5,9 +5,13 @@ import { HttpError } from "../middleware/error";
 import { requireAdmin, toUserDTO } from "../lib/auth";
 import { buildSignupSeries, periodBounds } from "../lib/stats";
 import { toContactMessageDTO } from "../lib/contactMessage";
+import adminPublications from "./adminPublications";
 
 const router = Router();
 router.use(requireAdmin);
+
+// Écriture de la bibliographie : monté ici pour hériter de requireAdmin ci-dessus
+router.use("/publications", adminPublications);
 
 const statsQuery = z.object({
   days: z.enum(["7", "30", "90"]).default("30").transform(Number),

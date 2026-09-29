@@ -58,6 +58,17 @@ export interface Publication {
   note: string | null;
 }
 
+/** Corps envoyé par le formulaire d'édition de la bibliographie (admin) */
+export interface PublicationInput {
+  title: string;
+  kind: PublicationKind;
+  source: string;
+  year: number;
+  author: string | null;
+  url: string | null;
+  note: string | null;
+}
+
 export type Settings = Record<string, string>;
 
 /** Corps du formulaire de contact public */

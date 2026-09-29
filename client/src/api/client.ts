@@ -8,6 +8,7 @@ import type {
   ContactStatus,
   Paginated,
   Publication,
+  PublicationInput,
   Settings,
   User,
 } from "./types";
@@ -36,7 +37,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 const get = <T>(path: string, signal?: AbortSignal) => request<T>(path, { signal });
 
-const send = <T>(method: "POST" | "PATCH", path: string, body?: unknown) =>
+const send = <T>(method: "POST" | "PATCH" | "DELETE", path: string, body?: unknown) =>
   request<T>(path, {
     method,
     headers: { "Content-Type": "application/json" },
@@ -45,6 +46,7 @@ const send = <T>(method: "POST" | "PATCH", path: string, body?: unknown) =>
 
 const post = <T>(path: string, body?: unknown) => send<T>("POST", path, body);
 const patch = <T>(path: string, body?: unknown) => send<T>("PATCH", path, body);
+const del = (path: string) => send<void>("DELETE", path);
 
 /** Maximum accepté par l'API pour `limit` */
 const PAGE_SIZE = 100;
@@ -95,4 +97,12 @@ export const api = {
     get<{ data: ContactMessage[]; meta: { unread: number } }>("/admin/messages", signal),
   adminMessageStatus: (id: string, status: ContactStatus) =>
     patch<{ data: ContactMessage }>(`/admin/messages/${id}`, { status }).then((r) => r.data),
+
+  /* --- Bibliographie : écriture réservée à l'administrateur --- */
+  createPublication: (body: PublicationInput) =>
+    post<{ data: Publication }>("/admin/publications", body).then((r) => r.data),
+  updatePublication: (id: string, body: Partial<PublicationInput>) =>
+    patch<{ data: Publication }>(`/admin/publications/${id}`, body).then((r) => r.data),
+  /** 204 sans corps : request() renvoie undefined, il n'y a rien à déballer */
+  deletePublication: (id: string) => del(`/admin/publications/${id}`),
 };

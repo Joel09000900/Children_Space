@@ -56,3 +56,54 @@
 @media (max-width: 760px) {
   .biblio__year { grid-template-columns: 1fr; gap: 14px; }
 }
+
+/* ---------- Édition de la bibliographie (administrateur) ---------- */
+.biblio__admin {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+  padding: 22px 24px; background: var(--surface-2);
+  border: 1px dashed var(--border-strong); border-radius: var(--radius-lg);
+}
+.biblio__admin-label {
+  font-family: var(--font-ui); font-size: 0.7rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+}
+.biblio__admin .biblio-form { width: 100%; }
+
+/* Actions par référence : discrètes au repos, lisibles au survol de la fiche */
+.biblio__item-actions {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px;
+  padding-top: 14px; border-top: 1px solid var(--border);
+  opacity: 0.55; transition: opacity 0.2s var(--ease);
+}
+.biblio__item:hover .biblio__item-actions,
+.biblio__item:focus-within .biblio__item-actions { opacity: 1; }
+.biblio__danger:hover { border-color: var(--bad); color: var(--bad); background: transparent; }
+
+/* Formulaire, en création comme en modification sur place */
+.biblio-form { display: flex; flex-direction: column; gap: 16px; }
+.biblio-form__title {
+  font-family: var(--font-display); font-size: 1.15rem; color: var(--gold-500);
+}
+.biblio-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.biblio-form__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Reprend l'apparence de .field input (auth.css) pour select et textarea */
+.biblio-form select,
+.biblio-form textarea {
+  padding: 12px 14px; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: var(--radius-md); color: var(--text); font-family: var(--font-ui);
+  font-size: 1rem; line-height: 1.55; letter-spacing: normal; text-transform: none;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.biblio-form textarea { resize: vertical; min-height: 80px; }
+.biblio-form select:focus,
+.biblio-form textarea:focus { outline: none; border-color: var(--violet-500); box-shadow: 0 0 0 3px var(--glow); }
+.biblio-form input::placeholder,
+.biblio-form textarea::placeholder { color: var(--muted); opacity: 0.7; }
+
+/* La mention « facultatif » ne doit pas se lire comme une partie du libellé */
+.field__hint { font-weight: 400; text-transform: none; letter-spacing: 0.02em; opacity: 0.7; }
+
+@media (max-width: 620px) {
+  .biblio-form__row { grid-template-columns: 1fr; }
+}

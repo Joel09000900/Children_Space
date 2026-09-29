@@ -112,6 +112,7 @@ de Prisma et d'Express, et les rares tests de routes simulent Prisma.
 | Serveur | Hachage des mots de passe et vérification à temps constant (anti-énumération), configuration du compte admin, options du cookie de session, origines CORS, politique de sécurité du contenu, contrôle d'`Origin` (défense CSRF), limitation des tentatives, séries du tableau de bord, 20 comptes de démonstration |
 | Serveur | Validation du formulaire de contact, leurre anti-robot, forme publique d'un message |
 | Serveur | Parcours HTTP complet d'un message : `POST /api/contact` → `GET`/`PATCH /api/admin/messages`, avec quota, CSRF et contrôle des droits |
+| Serveur | Bibliographie : validation d'une référence, et parcours HTTP `POST`/`PATCH`/`DELETE /api/admin/publications` avec CSRF et contrôle des droits |
 | Client | Playlist du widget sonore : catégories, intégrité des listes, navigation cyclique, index toujours dans les bornes |
 
 ## Musique
@@ -325,6 +326,9 @@ olikrys/
 | GET | `/api/admin/stats` | Statistiques d'inscription, admin uniquement. Filtre : `days` (7, 30 ou 90) |
 | GET | `/api/admin/messages` | Messages de contact reçus, admin uniquement. Filtres : `status`, `limit` |
 | PATCH | `/api/admin/messages/:id` | Change le statut d'un message : `NEW`, `READ` ou `ARCHIVED` |
+| POST | `/api/admin/publications` | Ajoute une référence à la bibliographie, admin uniquement |
+| PATCH | `/api/admin/publications/:id` | Modifie les champs fournis d'une référence |
+| DELETE | `/api/admin/publications/:id` | Supprime une référence (204, définitif) |
 
 `/api/auth/login` est limité à 10 tentatives par adresse IP toutes les 10 minutes, `/api/auth/register` et `/api/contact` à 5 par heure. Le formulaire de contact porte en plus un champ leurre (`website`) : rempli, la requête reçoit une réponse normale mais rien n'est écrit en base. La connexion consomme le même temps de calcul que l'identifiant existe ou non, afin que la durée de réponse ne révèle pas quels comptes sont inscrits.
 
