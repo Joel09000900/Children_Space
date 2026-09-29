@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa6";
 import { FiSend } from "react-icons/fi";
 import { useSite } from "../context/SiteContext";
-import { whatsappLink } from "../lib/contact";
+import { INSTAGRAM_URL, whatsappLink } from "../lib/contact";
 
 export default function ContactCTA({ title = "Acquérir une œuvre" }: { title?: string }) {
   const { artistName, settings } = useSite();
@@ -26,7 +26,7 @@ export default function ContactCTA({ title = "Acquérir une œuvre" }: { title?:
         <a className="btn btn--facebook" href={settings.facebook_url || "https://www.facebook.com/"} target="_blank" rel="noreferrer">
           <FaFacebookF /> Suivre sur Facebook
         </a>
-        <a className="btn btn--instagram" href={settings.instagram_url || "https://www.instagram.com/"} target="_blank" rel="noreferrer">
+        <a className="btn btn--instagram" href={settings.instagram_url || INSTAGRAM_URL} target="_blank" rel="noreferrer">
           <FaInstagram /> Suivre sur Instagram
         </a>
       </div>

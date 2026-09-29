@@ -95,7 +95,7 @@ const settings: Record<string, string> = {
   // Chiffres uniquement, indicatif compris : whatsappLink() retire tout le reste
   whatsapp_number: "2250566921793",
   facebook_url: "https://www.facebook.com/",
-  instagram_url: "https://www.instagram.com/",
+  instagram_url: "https://www.instagram.com/sibri_olikrys/",
 };
 
 async function main() {

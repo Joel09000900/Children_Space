@@ -5,7 +5,7 @@ import { api } from "../api/client";
 import { useSite } from "../context/SiteContext";
 import { useAuth } from "../context/AuthContext";
 import { useReveal } from "../hooks/useReveal";
-import { whatsappLink } from "../lib/contact";
+import { INSTAGRAM_URL, whatsappLink } from "../lib/contact";
 
 /** Doit rester aligné sur CONTACT_LIMITS côté serveur (server/src/lib/contactMessage.ts) */
 const LIMITS = { name: 80, email: 200, subject: 120, message: 4000 } as const;
@@ -165,7 +165,7 @@ export default function ContactPage() {
               </a>
               <a
                 className="btn btn--instagram"
-                href={settings.instagram_url || "https://www.instagram.com/"}
+                href={settings.instagram_url || INSTAGRAM_URL}
                 target="_blank" rel="noreferrer"
               >
                 <FaInstagram /> Suivre sur Instagram
