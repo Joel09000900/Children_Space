@@ -63,9 +63,8 @@ export default function BibliographyPage() {
           <p className="eyebrow eyebrow--wide">Publications</p>
           <h1 className="page-title">Bibliographie</h1>
           <p className="lead">
-            Livres, catalogues, articles et entretiens consacrés au travail de {artistName}.
+            Exploration de l’innocence de l’enfant. Cette période de la vie où tout l’imaginaire est Roi.
           </p>
-          {settings.about_intro && <p className="prose">{settings.about_intro}</p>}
 
           <dl className="biblio__figures">
             <div>
