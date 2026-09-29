@@ -1,4 +1,4 @@
-import { FaFacebookF, FaWhatsapp } from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa6";
 import { useSite } from "../context/SiteContext";
 import { whatsappLink } from "../lib/contact";
 
@@ -14,6 +14,9 @@ export default function Footer() {
         <div className="footer__social">
           <a className="icon-btn icon-btn--outline" href={settings.facebook_url || "https://www.facebook.com/"} target="_blank" rel="noreferrer" aria-label="Facebook">
             <FaFacebookF />
+          </a>
+          <a className="icon-btn icon-btn--outline" href={settings.instagram_url || "https://www.instagram.com/"} target="_blank" rel="noreferrer" aria-label="Instagram">
+            <FaInstagram />
           </a>
           <a className="icon-btn icon-btn--outline" href={whatsappLink(settings.whatsapp_number, artistName)} target="_blank" rel="noreferrer" aria-label="WhatsApp">
             <FaWhatsapp />

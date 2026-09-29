@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { FaFacebookF, FaWhatsapp } from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa6";
 import { FiCheck, FiClock, FiMail, FiSend } from "react-icons/fi";
 import { api } from "../api/client";
 import { useSite } from "../context/SiteContext";
@@ -162,6 +162,13 @@ export default function ContactPage() {
                 target="_blank" rel="noreferrer"
               >
                 <FaFacebookF /> Suivre sur Facebook
+              </a>
+              <a
+                className="btn btn--instagram"
+                href={settings.instagram_url || "https://www.instagram.com/"}
+                target="_blank" rel="noreferrer"
+              >
+                <FaInstagram /> Suivre sur Instagram
               </a>
             </div>
           </div>

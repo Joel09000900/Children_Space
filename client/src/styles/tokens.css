@@ -11,6 +11,8 @@
   --gold-700: #8b6914;
   --whatsapp: #22c55e;
   --facebook: #1877f2;
+  /* Instagram n'a pas de couleur plate : la marque est un dégradé */
+  --instagram: #d62976;
 
   --bg: #080810;
   --bg-2: #0f0f1a;
