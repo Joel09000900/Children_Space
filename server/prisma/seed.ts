@@ -1,7 +1,9 @@
 /**
- * Données de démonstration.
- * Les textes et titres sont des exemples à remplacer par les vraies œuvres de l'artiste.
- * Les images proviennent d'Unsplash (licence Unsplash) et servent de visuels provisoires.
+ * Données du site.
+ *
+ * Les œuvres et les collections décrivent les toiles réelles de l'artiste, dont les
+ * photos sont versionnées dans client/public/images/oeuvres. Expositions et
+ * publications restent des exemples à remplacer.
  */
 import "dotenv/config";
 import { PrismaClient, ExhibitionKind, PublicationKind } from "@prisma/client";
@@ -9,57 +11,149 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
 
-const img = (id: string, w: number) => `https://images.unsplash.com/${id}?w=${w}&q=80&auto=format&fit=crop`;
+/**
+ * Chemin public d'une photo d'œuvre. Les fichiers sont servis par le frontend
+ * (client/public/images/oeuvres), pas par l'API : un chemin relatif fonctionne
+ * aussi bien derrière Vite en développement que sur Vercel en production, et
+ * reste couvert par la directive CSP « img-src 'self' ».
+ */
+const img = (file: string) => `/images/oeuvres/${file}`;
 
 const collections = [
-  { slug: "terres-solaires", name: "Terres Solaires", year: 2022, color: "#7c3aed", position: 1,
-    description: "Paysages et visages saisis dans la chaleur des fins de journée." },
-  { slug: "songes-interieurs", name: "Songes Intérieurs", year: 2023, color: "#9333ea", position: 2,
-    description: "Des formes libres, nées de la mémoire et du rêve." },
-  { slug: "rythmes-urbains", name: "Rythmes Urbains", year: 2023, color: "#6d28d9", position: 3,
-    description: "La ville la nuit, ses reflets et ses passants." },
-  { slug: "silences-vegetaux", name: "Silences Végétaux", year: 2024, color: "#5b21b6", position: 4,
-    description: "Forêts, rivages et brumes observés au calme." },
+  { slug: "ribambelles", name: "Ribambelles", color: "#7c3aed", position: 1,
+    description: "Les bandes d'enfants, serrées les unes contre les autres, qui occupent toute la toile." },
+  { slug: "doudous-et-cartables", name: "Doudous et Cartables", color: "#9333ea", position: 2,
+    description: "Oursons, ardoises et premiers mots écrits à la craie." },
+  { slug: "ballons-et-coeurs", name: "Ballons et Cœurs", color: "#db2777", position: 3,
+    description: "Un fil, un ballon, et tout ce qu'on n'ose pas dire." },
+  { slug: "racines", name: "Racines", color: "#ea580c", position: 4,
+    description: "Drapeaux, cartes et ciels d'Afrique de l'Ouest." },
+  { slug: "jardins-interieurs", name: "Jardins Intérieurs", color: "#0d9488", position: 5,
+    description: "Fleurs, papillons et nuages pour seule compagnie." },
 ];
 
+/**
+ * Techniques affichées sur la page « À propos », barres classées par `mastery` décroissant.
+ *
+ * La liste décrivait auparavant de l'huile et de l'aquarelle, qui n'apparaissent dans
+ * aucune toile : la page affichait « Huile sur toile 90 % » sans une seule œuvre dans
+ * cette technique. Les quatre entrées ci-dessous correspondent à ce que montrent les
+ * photos. « Acrylique sur toile » et « Technique mixte » gardent leur nom exact : les
+ * œuvres s'y rattachent par ce libellé.
+ */
 const techniques = [
-  { name: "Huile sur toile", mastery: 90 },
-  { name: "Acrylique sur toile", mastery: 78 },
-  { name: "Technique mixte", mastery: 66 },
-  { name: "Aquarelle", mastery: 55 },
+  { name: "Acrylique sur toile", mastery: 92,
+    description: "Les fonds, les aplats et les cernes de couleur : la base de presque toutes les toiles." },
+  { name: "Technique mixte", mastery: 84,
+    description: "Acrylique, marqueur et pastel sur la même toile, parfois sur panneau de bois." },
+  { name: "Marqueur et pastel à l'huile", mastery: 76,
+    description: "Le trait fluo qui détoure chaque figure, repassé jusqu'à ce qu'il vibre sur le fond." },
+  { name: "Coulure et projection", mastery: 70,
+    description: "La peinture lancée ou laissée couler sur toute la hauteur, avant que les personnages soient posés." },
 ];
 
+/**
+ * Les 22 toiles photographiées dans client/public/images/oeuvres.
+ *
+ * `image` est la photo affichée en grand (modale et carrousel), `thumb` celle de
+ * la grille et de la recherche. Dix toiles ont été photographiées deux fois : le
+ * cliché le plus défini sert d'image principale, l'autre de vignette. Les toiles
+ * sans second cliché laissent `thumb` à null — le sérialiseur retombe alors sur
+ * `imageUrl` (voir server/src/lib/serializers.ts).
+ *
+ * `year` et `dimensions` sont volontairement absents : ces informations
+ * n'accompagnaient pas les photos et ne doivent pas être inventées. Elles
+ * s'ajoutent œuvre par œuvre dans Prisma Studio (`npm --prefix server run db:studio`) ;
+ * l'interface affiche « — » tant qu'elles manquent.
+ */
 const artworks = [
-  { slug: "braises-du-soir", title: "Braises du Soir", collection: "terres-solaires", technique: "Huile sur toile",
-    year: 2022, dimensions: "80 × 100 cm", featured: true, photo: "photo-1578301978693-85fa9c0320b9",
-    description: "Un horizon qui s'embrase lentement. Les ocres du premier plan répondent au violet du ciel, posé en couches fines pour garder la transparence." },
-  { slug: "ile-des-reves", title: "L'Île des Rêves", collection: "songes-interieurs", technique: "Acrylique sur toile",
-    year: 2023, dimensions: "60 × 80 cm", featured: true, photo: "photo-1541961017774-22349e4a1262",
-    description: "Des taches de couleur qui se rapprochent puis s'éloignent, comme des souvenirs qu'on n'arrive pas à fixer." },
-  { slug: "averse-nocturne", title: "Averse Nocturne", collection: "rythmes-urbains", technique: "Huile sur toile",
-    year: 2023, dimensions: "100 × 120 cm", featured: false, photo: "photo-1519501025264-65ba15a82390",
-    description: "Une avenue mouillée où les phares se dédoublent sur le bitume. Le tableau a été peint en trois séances, de nuit." },
-  { slug: "brume-matinale", title: "Brume Matinale", collection: "silences-vegetaux", technique: "Aquarelle",
-    year: 2024, dimensions: "70 × 90 cm", featured: true, photo: "photo-1448375240586-882707db888b",
-    description: "Les troncs disparaissent dans le blanc du papier. Très peu de pigment, beaucoup d'eau." },
-  { slug: "regard-dore", title: "Regard Doré", collection: "terres-solaires", technique: "Huile sur toile",
-    year: 2022, dimensions: "50 × 70 cm", featured: false, photo: "photo-1531746020798-e6953c6e8e04",
-    description: "Portrait en lumière rasante. Le fond rose poudré laisse toute la place au visage." },
-  { slug: "courants-magenta", title: "Courants Magenta", collection: "songes-interieurs", technique: "Technique mixte",
-    year: 2023, dimensions: "90 × 110 cm", featured: false, photo: "photo-1549490349-8643362247b5",
-    description: "Encre, acrylique et vernis coulés à plat, puis travaillés au couteau pendant le séchage." },
-  { slug: "toits-au-crepuscule", title: "Toits au Crépuscule", collection: "rythmes-urbains", technique: "Acrylique sur toile",
-    year: 2023, dimensions: "80 × 80 cm", featured: false, photo: "photo-1502602898657-3e91760cbb34",
-    description: "Une vue plongeante sur une ville qui allume ses premières fenêtres." },
-  { slug: "grand-large", title: "Grand Large", collection: "silences-vegetaux", technique: "Huile sur toile",
-    year: 2024, dimensions: "120 × 80 cm", featured: true, photo: "photo-1505118380757-91f5f5632de0",
-    description: "Une vague au moment où elle se retourne, peinte en bleus froids et en blancs épais." },
-  { slug: "sommets-voiles", title: "Sommets Voilés", collection: "terres-solaires", technique: "Huile sur toile",
-    year: 2022, dimensions: "100 × 100 cm", featured: false, photo: "photo-1506905925346-21bda4d32df4",
-    description: "Des crêtes qui émergent d'une mer de nuages, dans une palette réduite à quatre couleurs." },
-  { slug: "eclosion", title: "Éclosion", collection: "songes-interieurs", technique: "Technique mixte",
-    year: 2023, dimensions: "75 × 95 cm", featured: false, photo: "photo-1547826039-bfc35e0f1ea8",
-    description: "Projections et coulures sur panneau de bois : un tableau construit par gestes rapides." },
+  { slug: "deux-oursons-et-la-poupee", title: "Deux Oursons et la Poupée", collection: "doudous-et-cartables",
+    technique: "Technique mixte", featured: true, image: "img27.jpeg", thumb: "img1.jpeg",
+    description: "Deux têtes d'ourson cernées de bleu et d'orange veillent sur une figure debout. Le fond brun est rayé de coulures verticales et criblé de mots écrits à la main : « école », « vacance », « jolie »." },
+
+  { slug: "coucou", title: "Coucou", collection: "ribambelles",
+    technique: "Acrylique sur toile", featured: true, image: "img2.jpeg", thumb: null,
+    description: "Trois personnages et un papillon se détachent sur un orange saturé. Les contours bleus et roses sont repassés plusieurs fois ; les mots « coucou » et « love » traversent la toile." },
+
+  { slug: "la-ronde-mauve", title: "La Ronde Mauve", collection: "doudous-et-cartables",
+    technique: "Technique mixte", featured: false, image: "img3.jpeg", thumb: null,
+    description: "Un ourson aux longs bras plane au-dessus de trois figures mauves. Les cernes arc-en-ciel se superposent sur un fond vert acide entièrement ruisselant." },
+
+  { slug: "enfant-sous-la-lune", title: "Enfant sous la Lune", collection: "racines",
+    technique: "Technique mixte", featured: false, image: "img4.jpeg", thumb: null,
+    description: "Une silhouette cernée de jaune tient un petit drapeau, une lune pleine occupe le coin supérieur droit. Les mots « africain », « union » et « voyage » sont tracés dans la peinture encore fraîche." },
+
+  { slug: "lire-ecrire-un-plus-un", title: "Lire, Écrire, 1 + 1", collection: "doudous-et-cartables",
+    technique: "Acrylique sur toile", featured: true, image: "img25.jpeg", thumb: "img5.jpeg",
+    description: "Une ardoise noire porte « lire », « écrire », « 1 + 1 ». Deux figures roses l'encadrent, un ourson doré apparaît en bas à droite, et tout le fond part en coulures vertes et bleues." },
+
+  { slug: "la-fille-orange-et-le-garcon-bleu", title: "La Fille Orange et le Garçon Bleu", collection: "ribambelles",
+    technique: "Technique mixte", featured: false, image: "img24.jpeg", thumb: "img6.jpeg",
+    description: "Deux enfants se font face, l'un orange, l'autre bleu nuit, cernés de vert d'eau. Au-dessus d'eux flottent un nuage et une bulle de pensée." },
+
+  { slug: "joie-enfant-ballon", title: "Joie, Enfant, Ballon", collection: "racines",
+    technique: "Technique mixte", featured: false, image: "img26.jpeg", thumb: "img7.jpeg",
+    description: "Quatre figures et un ballon jaune sur un fond violet entièrement ruisselé. Une écharpe orange, blanche et verte barre la silhouette centrale ; « joie », « enfant » et « amour » courent entre les coulures." },
+
+  { slug: "bleu-outremer", title: "Bleu Outremer", collection: "doudous-et-cartables",
+    technique: "Acrylique sur toile", featured: false, image: "img8.jpeg", thumb: null,
+    description: "Un ourson couché et une figure debout, tous deux peints en bleu franc, se détachent sur un bordeaux moucheté. Les cernes passent du noir au cyan." },
+
+  { slug: "les-trois-curieux", title: "Les Trois Curieux", collection: "ribambelles",
+    technique: "Acrylique sur toile", featured: false, image: "img9.jpeg", thumb: null,
+    description: "Trois enfants aux yeux ronds se tiennent côte à côte, cernés de rose et de bleu. Le fond, vert et rouge, est entièrement tacheté de projections." },
+
+  { slug: "arc-en-ciel-sur-le-continent", title: "Arc-en-ciel sur le Continent", collection: "racines",
+    technique: "Acrylique sur toile", featured: true, image: "img10.jpeg", thumb: null,
+    description: "Un arc-en-ciel traverse la toile en diagonale ; à gauche, la forme blanche du continent africain. Format panoramique, fond rouge brique et vert bouteille." },
+
+  { slug: "la-marguerite", title: "La Marguerite", collection: "jardins-interieurs",
+    technique: "Acrylique sur toile", featured: true, image: "img29.jpeg", thumb: "img11.jpeg",
+    description: "Un enfant bleu pâle, cerné de rose et d'orange, tend une marguerite blanche plus grande que lui. Le fond bleu nuit est semé de pastilles turquoise." },
+
+  { slug: "le-ballon-grenat", title: "Le Ballon Grenat", collection: "ballons-et-coeurs",
+    technique: "Technique mixte", featured: true, image: "img12.jpeg", thumb: "img17.jpeg",
+    description: "Deux enfants bleus se partagent un ballon grenat. Papillons verts, pastilles cyan, et un fond crème entièrement griffé de fils noirs." },
+
+  { slug: "le-nuage-blanc", title: "Le Nuage Blanc", collection: "ribambelles",
+    technique: "Acrylique sur toile", featured: false, image: "img30.jpeg", thumb: "img13.jpeg",
+    description: "Trois enfants cernés de turquoise, un nuage blanc dans un cadre violet, des papillons dorés. Le fond mêle prune, bleu et rose en touches serrées." },
+
+  { slug: "fratrie", title: "Fratrie", collection: "ribambelles",
+    technique: "Acrylique sur toile", featured: false, image: "img31.jpeg", thumb: "img14.jpeg",
+    description: "Trois enfants roses aux grands yeux ovales sur un sarcelle profond. Les cernes jaune, vert et violet se répondent ; un nuage mauve occupe le coin gauche." },
+
+  { slug: "le-papillon-bleu", title: "Le Papillon Bleu", collection: "jardins-interieurs",
+    technique: "Acrylique sur toile", featured: false, image: "img15.jpeg", thumb: null,
+    description: "Une figure seule, cernée de vert fluo, lève la main vers un papillon bleu. Fond rose brique ponctué de pastilles turquoise et de fils noirs." },
+
+  { slug: "ballon-coeur", title: "Ballon-Cœur", collection: "ballons-et-coeurs",
+    technique: "Acrylique sur toile", featured: false, image: "img16.jpeg", thumb: null,
+    description: "Une petite figure en robe blanche tient un ballon en forme de cœur. Le fond, vert sombre et brun, s'éclaire de ronds jaunes et blancs." },
+
+  { slug: "coeur-brise", title: "Cœur Brisé", collection: "ballons-et-coeurs",
+    technique: "Technique mixte", featured: true, image: "img18.jpeg", thumb: null,
+    description: "Format vertical. Un cœur rose fendu flotte au bout d'un fil ; en dessous, une figure repliée sur elle-même. Un papillon mauve, et rien d'autre, sur un fond brun profond." },
+
+  { slug: "les-deux-rieurs", title: "Les Deux Rieurs", collection: "ribambelles",
+    technique: "Technique mixte", featured: false, image: "img19.jpeg", thumb: null,
+    description: "Deux visages hilares, dents apparentes, cernés de vert pâle. Une fleur et une troisième tête rouge complètent la scène sur un fond turquoise et prune." },
+
+  { slug: "la-voiture-et-le-ballon", title: "La Voiture et le Ballon", collection: "ribambelles",
+    technique: "Technique mixte", featured: false, image: "img20.jpeg", thumb: null,
+    description: "Trois enfants debout sur un fond vert anis ruisselé de noir. Une voiture cernée de rouge flotte à gauche, un ballon orange roule à leurs pieds." },
+
+  { slug: "la-tete-dans-les-nuages", title: "La Tête dans les Nuages", collection: "jardins-interieurs",
+    technique: "Acrylique sur toile", featured: false, image: "img21.jpeg", thumb: null,
+    description: "Format vertical. Une figure rose cernée de vert traverse un ciel bleu peuplé de nuages blancs soulignés d'orange." },
+
+  { slug: "la-danse-des-oursons", title: "La Danse des Oursons", collection: "doudous-et-cartables",
+    technique: "Technique mixte", featured: false, image: "img22.jpeg", thumb: null,
+    description: "Une figure aux grands yeux blancs ouvre les bras entre deux oursons, l'un bordeaux, l'autre orange. Fond bleu roi criblé de projections." },
+
+  { slug: "la-fleur-offerte", title: "La Fleur Offerte", collection: "ribambelles",
+    technique: "Technique mixte", featured: false, image: "img23.jpeg", thumb: null,
+    description: "Deux enfants cernés de vert fluo, une petite fleur entre eux, un nuage et un ballon jaune enfermés dans une bulle. Fond bleu et saumon entièrement tacheté." },
 ];
 
 const exhibitions = [
@@ -87,7 +181,9 @@ const publications = [
 const settings: Record<string, string> = {
   artist_name: "OliKrys",
   artist_role: "Artiste peintre",
-  hero_tagline: "Des toiles peintes à l'huile, à l'acrylique et à l'aquarelle, à parcourir comme on visite un atelier.",
+  // L'accroche annonçait de l'huile et de l'aquarelle : aucune toile n'est dans ces
+  // techniques. Elle décrit maintenant ce que le visiteur voit réellement en arrivant.
+  hero_tagline: "Des enfants et des doudous cernés de néon sur des fonds en coulures, à parcourir comme on visite un atelier.",
   footer_motto: "Peindre ce qui reste quand on ferme les yeux",
   about_intro: "Autodidacte, OliKrys peint depuis plusieurs années entre souvenirs d'enfance, scènes de rue et paysages d'Afrique de l'Ouest.",
   about_bio: "Son travail part presque toujours d'une observation précise : une lumière sur un mur, un geste, un reflet. Au fil des séances, le motif se simplifie et la couleur prend le relais. Chaque série explore une idée pendant une ou deux années avant de laisser place à la suivante.",
@@ -114,13 +210,15 @@ async function main() {
 
   let position = 0;
   for (const a of artworks) {
-    const { photo, collection, technique, ...rest } = a;
+    const { image, thumb, collection, technique, ...rest } = a;
     await prisma.artwork.create({
       data: {
         ...rest,
         position: position++,
-        imageUrl: img(photo, 1200),
-        thumbUrl: img(photo, 500),
+        imageUrl: img(image),
+        // Second cliché de la même toile quand il en existe un ; sinon null, et le
+        // sérialiseur renvoie imageUrl à sa place pour la grille.
+        thumbUrl: thumb ? img(thumb) : null,
         collectionId: colBySlug[collection],
         techniqueId: techByName[technique],
       },
