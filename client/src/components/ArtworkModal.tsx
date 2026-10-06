@@ -4,6 +4,7 @@ import { FaWhatsapp } from "react-icons/fa6";
 import type { Artwork } from "../api/types";
 import { useSite } from "../context/SiteContext";
 import { whatsappLink } from "../lib/contact";
+import ArtworkTitleEditor from "./ArtworkTitleEditor";
 
 interface Props {
   artwork: Artwork;
@@ -12,9 +13,11 @@ interface Props {
   onClose: () => void;
   onPrev: () => void;
   onNext: () => void;
+  /** Fourni à l'administrateur seul : renommage depuis la fiche de l'œuvre */
+  onRename?: (id: string, title: string) => Promise<void>;
 }
 
-export default function ArtworkModal({ artwork, position, total, onClose, onPrev, onNext }: Props) {
+export default function ArtworkModal({ artwork, position, total, onClose, onPrev, onNext, onRename }: Props) {
   const { artistName, settings } = useSite();
   const closeBtn = useRef<HTMLButtonElement>(null);
 
@@ -27,6 +30,10 @@ export default function ArtworkModal({ artwork, position, total, onClose, onPrev
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      // Pendant une saisie (renommage du titre), les flèches déplacent le curseur
+      // dans le champ : les laisser changer d'œuvre ferait perdre le texte en cours.
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (e.key === "ArrowRight") onNext();
       if (e.key === "ArrowLeft") onPrev();
     };
@@ -53,6 +60,11 @@ export default function ArtworkModal({ artwork, position, total, onClose, onPrev
             </p>
           )}
           <h2 id="modal-title" className="modal__title">{artwork.title}</h2>
+          {onRename && (
+            <div className="modal__admin">
+              <ArtworkTitleEditor title={artwork.title} onRename={(title) => onRename(artwork.id, title)} />
+            </div>
+          )}
 
           <dl className="specs">
             <div><dt>Technique</dt><dd>{artwork.technique ?? "—"}</dd></div>

@@ -181,6 +181,9 @@ const publications = [
 const settings: Record<string, string> = {
   artist_name: "OliKrys",
   artist_role: "Artiste peintre",
+  // Textes de l'en-tête de la galerie, modifiables depuis la page d'accueil (admin)
+  hero_eyebrow: "Bienvenue dans",
+  hero_title: "La Galerie",
   // L'accroche annonçait de l'huile et de l'aquarelle : aucune toile n'est dans ces
   // techniques. Elle décrit maintenant ce que le visiteur voit réellement en arrivant.
   hero_tagline: "Des enfants et des doudous cernés de néon sur des fonds en coulures, à parcourir comme on visite un atelier.",

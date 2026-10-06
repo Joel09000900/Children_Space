@@ -1,16 +1,19 @@
 import { useEffect, useRef } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import type { Artwork } from "../api/types";
+import ArtworkTitleEditor from "./ArtworkTitleEditor";
 
 interface Props {
   artworks: Artwork[];
   index: number;
   onIndexChange: (i: number) => void;
   onOpen: (i: number) => void;
+  /** Fourni à l'administrateur seul : ouvre le renommage sous l'œuvre centrale */
+  onRename?: (id: string, title: string) => Promise<void>;
 }
 
 /** Carrousel « salle d'exposition » : l'œuvre centrale est encadrée, les voisines s'estompent */
-export default function ArtworkSlider({ artworks, index, onIndexChange, onOpen }: Props) {
+export default function ArtworkSlider({ artworks, index, onIndexChange, onOpen, onRename }: Props) {
   const touchX = useRef<number | null>(null);
   const count = artworks.length;
   const go = (i: number) => onIndexChange((i + count) % count);
@@ -67,6 +70,10 @@ export default function ArtworkSlider({ artworks, index, onIndexChange, onOpen }
               <figcaption>
                 <strong>{a.title}</strong>
                 <small>{[a.collection?.name, a.year].filter(Boolean).join(" · ")}</small>
+                {/* Seule l'œuvre centrale est interactive : les voisines ont tabIndex -1 */}
+                {onRename && offset === 0 && (
+                  <ArtworkTitleEditor title={a.title} onRename={(title) => onRename(a.id, title)} />
+                )}
               </figcaption>
             </figure>
           );

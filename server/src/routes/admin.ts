@@ -6,12 +6,16 @@ import { requireAdmin, toUserDTO } from "../lib/auth";
 import { buildSignupSeries, periodBounds } from "../lib/stats";
 import { toContactMessageDTO } from "../lib/contactMessage";
 import adminPublications from "./adminPublications";
+import adminArtworks from "./adminArtworks";
+import adminSettings from "./adminSettings";
 
 const router = Router();
 router.use(requireAdmin);
 
-// Écriture de la bibliographie : monté ici pour hériter de requireAdmin ci-dessus
+// Écritures réservées : montées ici pour hériter de requireAdmin ci-dessus
 router.use("/publications", adminPublications);
+router.use("/artworks", adminArtworks);
+router.use("/settings", adminSettings);
 
 const statsQuery = z.object({
   days: z.enum(["7", "30", "90"]).default("30").transform(Number),

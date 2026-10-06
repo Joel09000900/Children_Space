@@ -98,6 +98,14 @@ export const api = {
   adminMessageStatus: (id: string, status: ContactStatus) =>
     patch<{ data: ContactMessage }>(`/admin/messages/${id}`, { status }).then((r) => r.data),
 
+  /* --- Textes du site et titres des œuvres : écriture réservée à l'administrateur --- */
+
+  /** Renvoie l'ensemble des réglages publics à jour, pas seulement les clés envoyées */
+  updateSettings: (body: Partial<Settings>) =>
+    patch<{ data: Settings }>("/admin/settings", body).then((r) => r.data),
+  renameArtwork: (id: string, title: string) =>
+    patch<{ data: Artwork }>(`/admin/artworks/${id}`, { title }).then((r) => r.data),
+
   /* --- Bibliographie : écriture réservée à l'administrateur --- */
   createPublication: (body: PublicationInput) =>
     post<{ data: Publication }>("/admin/publications", body).then((r) => r.data),

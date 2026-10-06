@@ -2,12 +2,15 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { api } from "../api/client";
 import type { Settings } from "../api/types";
 import { storage } from "../lib/storage";
+import { heroText } from "../lib/siteText";
 
 type Theme = "dark" | "light";
 
 interface SiteContextValue {
   settings: Settings;
   artistName: string;
+  /** Écriture réservée à l'administrateur : enregistre puis diffuse les textes à tout le site */
+  saveSettings: (patch: Partial<Settings>) => Promise<void>;
   theme: Theme;
   toggleTheme: () => void;
   searchOpen: boolean;
@@ -34,16 +37,26 @@ export function SiteProvider({ children }: { children: ReactNode }) {
 
   const toggleTheme = useCallback(() => setTheme((t) => (t === "dark" ? "light" : "dark")), []);
 
+  /**
+   * L'API répond avec l'ensemble des réglages publics : on remplace l'état d'un bloc
+   * plutôt que de fusionner le patch, ce qui évite d'afficher une valeur que le
+   * serveur aurait normalisée autrement (espaces en trop, par exemple).
+   */
+  const saveSettings = useCallback(async (patch: Partial<Settings>) => {
+    setSettings(await api.updateSettings(patch));
+  }, []);
+
   const value = useMemo(
     () => ({
       settings,
-      artistName: settings.artist_name || "OliKrys",
+      artistName: heroText(settings, "artist_name"),
+      saveSettings,
       theme,
       toggleTheme,
       searchOpen,
       setSearchOpen,
     }),
-    [settings, theme, toggleTheme, searchOpen],
+    [settings, saveSettings, theme, toggleTheme, searchOpen],
   );
 
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>;

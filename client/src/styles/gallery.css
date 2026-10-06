@@ -88,6 +88,44 @@
 .card__title { font-size: 1.25rem; }
 .card__meta { font-style: italic; color: var(--muted); font-size: 0.98rem; }
 
+/* ---------- Édition administrateur : titres de l'en-tête et des œuvres ---------- */
+.hero__actions { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.hero-form {
+  width: min(520px, 100%); margin-top: 6px; padding: 22px;
+  display: flex; flex-direction: column; gap: 14px; text-align: left;
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+  backdrop-filter: blur(12px);
+  animation: rise 0.5s var(--ease-out) both;
+}
+.hero-form__title {
+  font-family: var(--font-ui); font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--violet-400);
+}
+.hero-form__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+/* .hero .btn porte une animation d'entrée retardée : inutile dans un formulaire déjà ouvert */
+.hero-form .btn { margin-top: 0; animation: none; }
+.hero-form input,
+.hero-form textarea {
+  padding: 11px 13px; font: inherit; font-size: 0.95rem; text-transform: none; letter-spacing: normal;
+  color: var(--text); background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-md);
+}
+.hero-form textarea { resize: vertical; min-height: 64px; }
+.hero-form input:focus,
+.hero-form textarea:focus { outline: none; border-color: var(--violet-500); box-shadow: 0 0 0 3px var(--glow); }
+
+/* Renommage d'une œuvre, affiché sous la légende (carrousel), la vignette (grille) et la fiche (modale) */
+.title-editor { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.title-editor input {
+  width: 100%; padding: 9px 12px; font: inherit; font-size: 0.95rem;
+  color: var(--text); background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-md);
+}
+.title-editor input:focus { outline: none; border-color: var(--violet-500); box-shadow: 0 0 0 3px var(--glow); }
+.title-editor__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.slide figcaption .title-editor { margin-top: 10px; }
+.slide figcaption .title-editor__open { margin-top: 10px; }
+.card__admin { padding: 0 20px 18px; }
+.modal__admin { margin-top: -6px; }
+
 @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
 @keyframes wheel { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(12px); } }
 @keyframes float { from { transform: translateY(0); } to { transform: translateY(-110vh); } }
