@@ -56,7 +56,7 @@ export default function ArtworkSlider({ artworks, index, onIndexChange, onOpen }
               hidden={hidden}
             >
               <button
-                className="frame"
+                className="slide__media"
                 data-cursor="art"
                 tabIndex={offset === 0 ? 0 : -1}
                 onClick={() => (offset === 0 ? onOpen(i) : go(i))}
