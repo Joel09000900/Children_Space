@@ -46,6 +46,15 @@ export const MORCEAUX: Track[] = [
       { src: "/audio/tout-va-changer.ogg", type: "audio/ogg" },
     ],
   },
+  {
+    id: "everyday-allian-c",
+    title: "Everyday Allian'C",
+    subtitle: "Artiste inconnu",
+    sources: [
+      { src: "/audio/everyday-allian-c.mp3", type: "audio/mpeg" },
+      { src: "/audio/everyday-allian-c.ogg", type: "audio/ogg" },
+    ],
+  },
 ];
 
 export const AMBIANCES: Ambiance[] = [
