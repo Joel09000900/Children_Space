@@ -193,7 +193,6 @@ const settings: Record<string, string> = {
   about_quote: "Je ne cherche pas à copier ce que je vois, mais à garder la sensation qu'il m'a laissée.",
   // Chiffres uniquement, indicatif compris : whatsappLink() retire tout le reste
   whatsapp_number: "2250566921793",
-  facebook_url: "https://www.facebook.com/",
   instagram_url: "https://www.instagram.com/sibri_olikrys/",
   tiktok_url: "https://www.tiktok.com/@olikrys?_r=1&_t=ZS-9AKOSkHvHsr",
 };

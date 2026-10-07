@@ -1,11 +1,11 @@
 import { useState, type FormEvent } from "react";
-import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa6";
+import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
 import { FiCheck, FiClock, FiMail, FiSend } from "react-icons/fi";
 import { api } from "../api/client";
 import { useSite } from "../context/SiteContext";
 import { useAuth } from "../context/AuthContext";
 import { useReveal } from "../hooks/useReveal";
-import { INSTAGRAM_URL, whatsappLink } from "../lib/contact";
+import { INSTAGRAM_URL, TIKTOK_URL, whatsappLink } from "../lib/contact";
 
 /** Doit rester aligné sur CONTACT_LIMITS côté serveur (server/src/lib/contactMessage.ts) */
 const LIMITS = { name: 80, email: 200, subject: 120, message: 4000 } as const;
@@ -157,11 +157,11 @@ export default function ContactPage() {
                 <FaWhatsapp /> Écrire sur WhatsApp
               </a>
               <a
-                className="btn btn--facebook"
-                href={settings.facebook_url || "https://www.facebook.com/"}
+                className="btn btn--tiktok"
+                href={settings.tiktok_url || TIKTOK_URL}
                 target="_blank" rel="noreferrer"
               >
-                <FaFacebookF /> Suivre sur Facebook
+                <FaTiktok /> Suivre sur TikTok
               </a>
               <a
                 className="btn btn--instagram"
