@@ -7,6 +7,7 @@ import { useAsync } from "../hooks/useAsync";
 import { useReveal } from "../hooks/useReveal";
 import { useSite } from "../context/SiteContext";
 import { useAuth } from "../context/AuthContext";
+import PortraitSlideshow from "../components/PortraitSlideshow";
 import PublicationForm from "../components/PublicationForm";
 
 const KIND_LABELS: Record<PublicationKind, string> = {
@@ -19,7 +20,15 @@ const KIND_LABELS: Record<PublicationKind, string> = {
 /** Ordre d'affichage du décompte par nature, indépendant de l'ordre des données */
 const KIND_ORDER: PublicationKind[] = ["BOOK", "CATALOGUE", "ARTICLE", "INTERVIEW"];
 
-const PORTRAIT = "/images/olikrys.png";
+/**
+ * Clichés d'atelier qui défilent dans le portrait, dans l'ordre d'affichage.
+ * `img34` n'existe pas dans la série fournie : la numérotation saute de 33 à 35.
+ */
+const PORTRAITS = [
+  "/images/portraits/img33.jpeg",
+  "/images/portraits/img35.jpeg",
+  "/images/portraits/img36.jpeg",
+];
 
 /** Décompte par nature, en ne gardant que les catégories réellement présentes */
 function countByKind(publications: Publication[]) {
@@ -105,14 +114,7 @@ export default function BibliographyPage() {
       <header className="section biblio__hero">
         <figure className="biblio__portrait reveal">
           <span className="corner corner--tl" aria-hidden="true" />
-          <img
-            src={PORTRAIT}
-            alt={`Portrait de ${artistName}`}
-            width={305}
-            height={464}
-            loading="eager"
-            decoding="async"
-          />
+          <PortraitSlideshow images={PORTRAITS} alt={`Portrait de ${artistName}`} />
           <span className="corner corner--br" aria-hidden="true" />
           <figcaption>
             {artistName}

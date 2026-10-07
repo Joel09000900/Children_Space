@@ -9,6 +9,27 @@
   display: block; width: 100%; height: auto; aspect-ratio: 305 / 464; object-fit: cover; object-position: center top;
   border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
 }
+
+/*
+ * Diaporama du portrait : les clichés occupent la même cellule de grille, ce qui
+ * dimensionne le bloc sans positionnement absolu. Arrondi, ombre et découpe
+ * passent sur le conteneur : le léger zoom du cliché actif déborderait sinon du
+ * cadre, et une ombre portée sur un élément transformé bave aux angles.
+ */
+.portrait-slideshow {
+  display: grid; isolation: isolate;
+  border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-lg);
+}
+.portrait-slideshow img {
+  grid-area: 1 / 1;
+  /* Les clichés sont déjà recadrés au format du bloc : on centre au lieu de cadrer haut */
+  object-position: center;
+  border-radius: 0; box-shadow: none;
+  opacity: 0; transform: scale(1.06);
+  transition: opacity 0.9s var(--ease), transform 2s var(--ease);
+}
+/* Le cliché entrant passe au-dessus du sortant : le fondu reste propre au bouclage */
+.portrait-slideshow img.is-active { opacity: 1; transform: scale(1); z-index: 1; }
 .biblio__portrait figcaption {
   display: flex; flex-direction: column; gap: 2px; margin-top: 16px; text-align: center;
   font-family: var(--font-display); font-size: 1.15rem; color: var(--text);
