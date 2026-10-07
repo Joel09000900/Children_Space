@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa6";
+import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
 import { FiSend } from "react-icons/fi";
 import { useSite } from "../context/SiteContext";
-import { INSTAGRAM_URL, whatsappLink } from "../lib/contact";
+import { INSTAGRAM_URL, TIKTOK_URL, whatsappLink } from "../lib/contact";
 
 export default function ContactCTA({ title = "Acquérir une œuvre" }: { title?: string }) {
   const { artistName, settings } = useSite();
@@ -23,8 +23,8 @@ export default function ContactCTA({ title = "Acquérir une œuvre" }: { title?:
         <a className="btn btn--whatsapp" href={whatsappLink(settings.whatsapp_number, artistName)} target="_blank" rel="noreferrer">
           <FaWhatsapp /> Écrire sur WhatsApp
         </a>
-        <a className="btn btn--facebook" href={settings.facebook_url || "https://www.facebook.com/"} target="_blank" rel="noreferrer">
-          <FaFacebookF /> Suivre sur Facebook
+        <a className="btn btn--tiktok" href={settings.tiktok_url || TIKTOK_URL} target="_blank" rel="noreferrer">
+          <FaTiktok /> Suivre sur TikTok
         </a>
         <a className="btn btn--instagram" href={settings.instagram_url || INSTAGRAM_URL} target="_blank" rel="noreferrer">
           <FaInstagram /> Suivre sur Instagram

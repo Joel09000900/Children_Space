@@ -5,6 +5,13 @@
  */
 export const INSTAGRAM_URL = "https://www.instagram.com/sibri_olikrys/";
 
+/**
+ * Même rôle pour TikTok : repli de `settings.tiktok_url`.
+ * Les paramètres `_r` et `_t` viennent du lien de partage de l'application ;
+ * ils sont conservés tels quels, c'est l'adresse fournie par l'artiste.
+ */
+export const TIKTOK_URL = "https://www.tiktok.com/@olikrys?_r=1&_t=ZS-9AKOSkHvHsr";
+
 export function whatsappLink(number: string | undefined, artistName: string, artworkTitle?: string) {
   const digits = (number ?? "").replace(/\D/g, "");
   const message = artworkTitle

@@ -195,6 +195,7 @@ const settings: Record<string, string> = {
   whatsapp_number: "2250566921793",
   facebook_url: "https://www.facebook.com/",
   instagram_url: "https://www.instagram.com/sibri_olikrys/",
+  tiktok_url: "https://www.tiktok.com/@olikrys?_r=1&_t=ZS-9AKOSkHvHsr",
 };
 
 async function main() {
