@@ -3,6 +3,17 @@ import { api } from "../api/client";
 import { useAsync } from "../hooks/useAsync";
 import { useReveal } from "../hooks/useReveal";
 import ContactCTA from "../components/ContactCTA";
+import Slideshow from "../components/Slideshow";
+
+/**
+ * Clichés d'exposition qui défilent dans l'en-tête, dans l'ordre d'affichage.
+ * `img39` n'existe pas dans la série fournie : la numérotation saute de 38 à 40.
+ */
+const EXPOSITIONS = [
+  "/images/about/img37.jpeg",
+  "/images/about/img38.jpeg",
+  "/images/about/img40.jpeg",
+];
 
 const APPROACH = [
   { icon: FiEye, title: "Observer", text: "Tout commence par un détail remarqué dans la rue, un paysage ou un visage." },
@@ -20,19 +31,23 @@ export default function AboutPage() {
   if (loading) return <p className="state state--page">Chargement…</p>;
   if (error || !data) return <p className="state state--page state--error">Impossible de charger la page : {error}</p>;
 
-  const { settings, stats, techniques, exhibitions, collections, heroImage } = data;
+  /* `data.heroImage` n'est plus lu ici : l'en-tête montre le diaporama d'exposition
+     plutôt que l'œuvre tirée de la base. Le champ reste servi par /api/about. */
+  const { settings, stats, techniques, exhibitions, collections } = data;
   const name = settings.artist_name || "OliKrys";
 
   return (
     <div className="about">
       <section className="about-hero">
-        {heroImage && (
-          <div className="about-hero__media reveal">
-            <span className="corner corner--tl" aria-hidden="true" />
-            <img src={heroImage} alt={`Œuvre de ${name}`} />
-            <span className="corner corner--br" aria-hidden="true" />
-          </div>
-        )}
+        <div className="about-hero__media reveal">
+          <span className="corner corner--tl" aria-hidden="true" />
+          <Slideshow
+            images={EXPOSITIONS}
+            alt={`${name} devant ses œuvres en exposition`}
+            className="about-hero__slideshow"
+          />
+          <span className="corner corner--br" aria-hidden="true" />
+        </div>
         <div className="about-hero__text reveal">
           <p className="eyebrow eyebrow--wide">{settings.artist_role || "Artiste peintre"}</p>
           <h1 className="page-title">{name}</h1>

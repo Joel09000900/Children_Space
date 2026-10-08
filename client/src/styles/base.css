@@ -117,6 +117,21 @@ p { margin: 0; }
 .state--page { min-height: 70vh; display: grid; place-items: center; padding-top: calc(var(--nav-h) + 40px); }
 .state--error { color: #f87171; }
 
+/*
+ * Diaporama (composant Slideshow) — mécanique seule : les clichés occupent la
+ * même cellule de grille, ce qui dimensionne le bloc sans positionnement absolu.
+ * Format, arrondi et ombre appartiennent à l'habillage de l'appelant
+ * (.portrait-slideshow, .about-hero__slideshow).
+ */
+.slideshow { display: grid; isolation: isolate; }
+.slideshow img {
+  grid-area: 1 / 1;
+  opacity: 0; transform: scale(1.06);
+  transition: opacity 0.9s var(--ease), transform 2s var(--ease);
+}
+/* Le cliché entrant passe au-dessus du sortant : le fondu reste propre au bouclage */
+.slideshow img.is-active { opacity: 1; transform: scale(1); z-index: 1; }
+
 /* Apparition au défilement */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); }
 .reveal.is-visible { opacity: 1; transform: none; }

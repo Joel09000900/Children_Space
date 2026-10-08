@@ -8,6 +8,12 @@
 .about-hero { max-width: var(--max-w); margin: 0 auto; padding: 60px var(--gutter) 40px; display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(28px, 6vw, 80px); align-items: center; }
 .about-hero__media { position: relative; padding: 18px; }
 .about-hero__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); }
+/* Habillage du diaporama d'atelier — mécanique dans `.slideshow` (base.css).
+   Arrondi, ombre et découpe passent sur le conteneur, pas sur les clichés :
+   le zoom du cliché actif déborderait du cadre et l'ombre baverait aux angles.
+   Les équerres dorées restent au-dessus de la pile. */
+.about-hero__slideshow { border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-lg); }
+.about-hero__slideshow img { border-radius: 0; box-shadow: none; }
 .corner { position: absolute; width: 56px; height: 56px; border: 2px solid var(--gold-500); }
 .corner--tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
 .corner--br { bottom: 0; right: 0; border-left: 0; border-top: 0; }

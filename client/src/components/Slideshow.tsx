@@ -4,13 +4,23 @@ import { useEffect, useState } from "react";
 const INTERVAL = 2000;
 
 /**
- * Diaporama d'un portrait : les clichés sont empilés et se succèdent en fondu.
+ * Diaporama : les clichés sont empilés dans une même cellule de grille et se
+ * succèdent en fondu. La mécanique vit dans `.slideshow` (base.css), l'habillage
+ * — format, arrondi, ombre — appartient à l'appelant via `className`.
  *
  * Le réglage système « réduire les animations » coupe la rotation plutôt que de
  * la raccourcir : la règle globale de base.css ramène les transitions à 0,01 ms,
  * ce qui transformerait le fondu en clignotement toutes les deux secondes.
  */
-export default function PortraitSlideshow({ images, alt }: { images: string[]; alt: string }) {
+export default function Slideshow({
+  images,
+  alt,
+  className,
+}: {
+  images: string[];
+  alt: string;
+  className: string;
+}) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -21,7 +31,7 @@ export default function PortraitSlideshow({ images, alt }: { images: string[]; a
   }, [images.length]);
 
   return (
-    <div className="portrait-slideshow">
+    <div className={`slideshow ${className}`}>
       {images.map((src, i) => (
         <img
           key={src}

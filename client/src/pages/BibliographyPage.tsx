@@ -7,7 +7,7 @@ import { useAsync } from "../hooks/useAsync";
 import { useReveal } from "../hooks/useReveal";
 import { useSite } from "../context/SiteContext";
 import { useAuth } from "../context/AuthContext";
-import PortraitSlideshow from "../components/PortraitSlideshow";
+import Slideshow from "../components/Slideshow";
 import PublicationForm from "../components/PublicationForm";
 
 const KIND_LABELS: Record<PublicationKind, string> = {
@@ -114,7 +114,7 @@ export default function BibliographyPage() {
       <header className="section biblio__hero">
         <figure className="biblio__portrait reveal">
           <span className="corner corner--tl" aria-hidden="true" />
-          <PortraitSlideshow images={PORTRAITS} alt={`Portrait de ${artistName}`} />
+          <Slideshow images={PORTRAITS} alt={`Portrait de ${artistName}`} className="portrait-slideshow" />
           <span className="corner corner--br" aria-hidden="true" />
           <figcaption>
             {artistName}
