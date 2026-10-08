@@ -9,9 +9,25 @@
   --gold-500: #d4a843;
   --gold-300: #f0c060;
   --gold-700: #8b6914;
+  /* Couleurs de marque des réseaux : seule source de vérité, lue par les
+     .btn--* de base.css. Chaque réseau a les teintes de son dégradé puis son
+     halo, écrit en rgba comme les autres jetons translucides — CSS ne sait pas
+     dériver une opacité d'un jeton hexadécimal, d'où la teinte en commentaire.
+     N'ajouter ici qu'un jeton réellement consommé : le précédent --facebook est
+     parti avec son bouton, --whatsapp et --instagram étaient restés morts. */
   --whatsapp: #22c55e;
-  /* Instagram n'a pas de couleur plate : la marque est un dégradé */
-  --instagram: #d62976;
+  --whatsapp-deep: #16a34a;
+  --whatsapp-glow: rgba(34, 197, 94, 0.3); /* --whatsapp à 30 % */
+  /* Instagram n'a pas de couleur plate : la marque est un dégradé de trois
+     teintes, le halo reprend son magenta représentatif #d62976. */
+  --instagram-warm: #f09433;
+  --instagram-mid: #dc2743;
+  --instagram-deep: #bc1888;
+  --instagram-glow: rgba(214, 41, 118, 0.3);
+  /* TikTok : fond noir, halo rose #fe2c55 */
+  --tiktok-ink: #010101;
+  --tiktok-ink-2: #1f1f1f;
+  --tiktok-glow: rgba(254, 44, 85, 0.3);
 
   --bg: #080810;
   --bg-2: #0f0f1a;

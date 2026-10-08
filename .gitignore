@@ -20,3 +20,8 @@ sceance*.md
 # Les images d'origine, légères, sont versionnées.
 medias-sources/audio/*
 !medias-sources/audio/.gitkeep
+
+# Dossier de travail des images sources : les 32 œuvres y sont des doublons
+# octet pour octet de client/public/images/oeuvres/. Les originaux à conserver
+# sont copiés dans medias-sources/images/ (voir son README).
+client/olyImage/
