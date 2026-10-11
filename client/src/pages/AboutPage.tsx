@@ -6,13 +6,18 @@ import ContactCTA from "../components/ContactCTA";
 import Slideshow from "../components/Slideshow";
 
 /**
- * Clichés d'exposition qui défilent dans l'en-tête, dans l'ordre d'affichage.
+ * Clichés qui défilent dans l'en-tête, dans l'ordre d'affichage.
  * `img39` n'existe pas dans la série fournie : la numérotation saute de 38 à 40.
+ *
+ * Toute la série est en portrait, d'où le cadre vertical côté CSS. `img33`
+ * vient du dossier des portraits : pris en portrait lui aussi, il n'avait plus
+ * sa place dans l'en-tête paysage de la bibliographie.
  */
-const EXPOSITIONS = [
+const PORTRAITS = [
   "/images/about/img37.jpeg",
   "/images/about/img38.jpeg",
   "/images/about/img40.jpeg",
+  "/images/portraits/img33.jpeg",
 ];
 
 const APPROACH = [
@@ -42,8 +47,8 @@ export default function AboutPage() {
         <div className="about-hero__media reveal">
           <span className="corner corner--tl" aria-hidden="true" />
           <Slideshow
-            images={EXPOSITIONS}
-            alt={`${name} devant ses œuvres en exposition`}
+            images={PORTRAITS}
+            alt={`Portrait de ${name}`}
             className="about-hero__slideshow"
           />
           <span className="corner corner--br" aria-hidden="true" />

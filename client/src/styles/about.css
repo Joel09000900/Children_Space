@@ -7,7 +7,12 @@
 
 .about-hero { max-width: var(--max-w); margin: 0 auto; padding: 60px var(--gutter) 40px; display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(28px, 6vw, 80px); align-items: center; }
 .about-hero__media { position: relative; padding: 18px; }
-.about-hero__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); }
+/*
+ * Cadre vertical : toute la série est en portrait, autour de 3/4 (0,75 à 0,77).
+ * `contain` plutôt que `cover` pour que chaque cliché se voie entier ; l'écart
+ * de format entre eux est si faible que les bandes restent imperceptibles.
+ */
+.about-hero__media img { width: 100%; aspect-ratio: 3 / 4; object-fit: contain; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); }
 /* Habillage du diaporama d'atelier — mécanique dans `.slideshow` (base.css).
    Arrondi, ombre et découpe passent sur le conteneur, pas sur les clichés :
    le zoom du cliché actif déborderait du cadre et l'ombre baverait aux angles.
