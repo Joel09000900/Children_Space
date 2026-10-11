@@ -12,6 +12,11 @@ import Slideshow from "../components/Slideshow";
  * Toute la série est en portrait, d'où le cadre vertical côté CSS. `img33`
  * vient du dossier des portraits : pris en portrait lui aussi, il n'avait plus
  * sa place dans l'en-tête paysage de la bibliographie.
+ *
+ * Les trois clichés d'exposition sont des captures Instagram : les originaux
+ * portent les flèches de défilement et les pastilles du carrousel. Les copies
+ * publiées sont recadrées pour les écarter — voir le commit correspondant pour
+ * les coordonnées, l'original intact restant dans medias-sources.
  */
 const PORTRAITS = [
   "/images/about/img37.jpeg",
