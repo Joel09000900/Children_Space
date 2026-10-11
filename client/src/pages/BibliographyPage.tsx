@@ -21,11 +21,15 @@ const KIND_LABELS: Record<PublicationKind, string> = {
 const KIND_ORDER: PublicationKind[] = ["BOOK", "CATALOGUE", "ARTICLE", "INTERVIEW"];
 
 /**
- * Clichés d'atelier qui défilent dans le portrait, dans l'ordre d'affichage.
- * `img34` n'existe pas dans la série fournie : la numérotation saute de 33 à 35.
+ * Clichés d'atelier qui défilent dans l'en-tête, dans l'ordre d'affichage.
+ *
+ * Seuls les clichés nativement en paysage figurent ici : `img33`, pris en
+ * portrait (810 x 1080), a été retiré — l'y remettre imposerait soit de le
+ * rogner, soit de le cercler de bandes noires dans un cadre large.
+ * Les deux restants n'ont pas tout à fait le même format (1,63 et 1,78), d'où
+ * le cadre en 16/9 et l'affichage sans recadrage côté CSS.
  */
 const PORTRAITS = [
-  "/images/portraits/img33.jpeg",
   "/images/portraits/img35.jpeg",
   "/images/portraits/img36.jpeg",
 ];

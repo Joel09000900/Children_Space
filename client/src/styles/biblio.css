@@ -2,11 +2,22 @@
 .biblio { padding-top: var(--nav-h); }
 .biblio__intro { display: flex; flex-direction: column; gap: 18px; }
 
-/* ---------- Hero : portrait + présentation ---------- */
-.biblio__hero { display: grid; grid-template-columns: minmax(240px, 340px) 1fr; gap: clamp(28px, 6vw, 72px); align-items: center; padding-bottom: 20px; }
-.biblio__portrait { position: relative; margin: 0; padding: 18px; }
+/* ---------- Hero : paysage pleine largeur, puis présentation en dessous ---------- */
+/*
+ * Le cliché s'aligne sur la navbar : `.biblio__hero` est un `.section`, qui
+ * partage la largeur utile de `.navbar__inner` (--max-w moins les gouttières).
+ * La figure ne garde donc aucune marge propre, sinon l'image rentrerait d'autant.
+ */
+.biblio__hero { display: flex; flex-direction: column; gap: clamp(24px, 4vw, 48px); padding-bottom: 20px; }
+.biblio__portrait { position: relative; margin: 0; padding: 0; width: 100%; }
 .biblio__portrait img {
-  display: block; width: 100%; height: auto; aspect-ratio: 305 / 464; object-fit: cover; object-position: center top;
+  display: block; width: 100%; height: auto; aspect-ratio: 16 / 9;
+  /*
+   * `contain` et non `cover` : les clichés doivent se voir entiers. Les deux
+   * ne partagent pas exactement le même format (1,63 et 1,78), le plus étroit
+   * laisse donc une fine bande de part et d'autre, dans le fond de la page.
+   */
+  object-fit: contain; object-position: center;
   border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
 }
 
@@ -20,8 +31,6 @@
   border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-lg);
 }
 .portrait-slideshow img {
-  /* Les clichés sont déjà recadrés au format du bloc : on centre au lieu de cadrer haut */
-  object-position: center;
   border-radius: 0; box-shadow: none;
 }
 .biblio__portrait figcaption {
@@ -62,8 +71,7 @@
 .biblio__note { margin-top: 10px; color: var(--text-2); }
 
 @media (max-width: 900px) {
-  .biblio__hero { grid-template-columns: 1fr; justify-items: center; text-align: center; }
-  .biblio__portrait { width: min(280px, 70vw); }
+  .biblio__hero { text-align: center; }
   .biblio__intro { align-items: center; }
   .biblio__figures { justify-content: center; }
 }
