@@ -7,13 +7,20 @@ const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 /**
  * Décide si une requête modifiante est acceptable au vu de son en-tête `Origin`.
  *
- * Une absence d'`Origin` est autorisée : les navigateurs l'envoient systématiquement
- * sur les requêtes non-GET, y compris same-origin. Son absence signale donc un client
- * non-navigateur (curl, application mobile, test), qui ne transporte pas de cookie
- * ambiant et n'est par nature pas exposé au CSRF.
+ * Une absence d'`Origin` n'est tolérée que pour un client qui ne présente aucun
+ * cookie. Les navigateurs envoient systématiquement l'en-tête sur les requêtes
+ * non-GET : une requête porteuse de cookies mais sans `Origin` ne peut donc pas
+ * venir d'un navigateur à jour, et c'est précisément la forme qu'aurait une
+ * tentative de contournement. Les clients non-navigateurs (curl, sonde de
+ * supervision, application mobile) continuent de passer tant qu'ils ne
+ * s'appuient pas sur un cookie ambiant, seul vecteur du CSRF.
+ *
+ * Le durcissement compte surtout en production : le site et l'API y vivant sur
+ * deux domaines, le cookie est en `SameSite=None` et ce contrôle devient la
+ * seule barrière CSRF restante.
  */
-export function isOriginAllowed(origin: string | undefined, allowed: string[]) {
-  if (!origin) return true;
+export function isOriginAllowed(origin: string | undefined, allowed: string[], hasCookies = false) {
+  if (!origin) return !hasCookies;
   return allowed.includes(origin);
 }
 
@@ -28,7 +35,7 @@ export function isOriginAllowed(origin: string | undefined, allowed: string[]) {
 export function verifyOrigin(allowed: string[]): RequestHandler {
   return (req, _res, next) => {
     if (SAFE_METHODS.has(req.method)) return next();
-    if (isOriginAllowed(req.headers.origin, allowed)) return next();
+    if (isOriginAllowed(req.headers.origin, allowed, Boolean(req.headers.cookie))) return next();
     throw new HttpError(403, "Origine non autorisée");
   };
 }
