@@ -83,8 +83,12 @@ export const api = {
   about: (signal?: AbortSignal) => get<{ data: AboutData }>("/about", signal).then((r) => r.data),
   publications: (signal?: AbortSignal) => get<{ data: Publication[] }>("/publications", signal).then((r) => r.data),
   me: () => get<{ data: User | null }>("/auth/me").then((r) => r.data),
+  /**
+   * L'API n'ouvre pas de session ici et ne dit pas si l'adresse était libre :
+   * la réponse ne porte donc aucun utilisateur, et la connexion reste à faire.
+   */
   register: (body: { name: string; email: string; password: string }) =>
-    post<{ data: User }>("/auth/register", body).then((r) => r.data),
+    post<{ data: { registered: true } }>("/auth/register", body).then(() => undefined),
   login: (body: { identifier: string; password: string }) =>
     post<{ data: User }>("/auth/login", body).then((r) => r.data),
   logout: () => post<void>("/auth/logout"),

@@ -19,7 +19,12 @@ export default function RegisterPage() {
     setError(null);
     try {
       await register(String(data.get("name")), String(data.get("email")), String(data.get("password")));
-      navigate("/");
+      // L'API ne dit pas si l'adresse était libre : le message reste donc au
+      // conditionnel, et la connexion se fait depuis la page dédiée.
+      navigate("/connexion", {
+        replace: true,
+        state: { notice: "Si cette adresse était disponible, votre compte est créé. Connectez-vous pour continuer." },
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Inscription impossible");
       setPending(false);

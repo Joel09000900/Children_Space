@@ -7,7 +7,8 @@ interface AuthContextValue {
   loading: boolean;
   /** `identifier` accepte le pseudo ou l'adresse e-mail */
   login: (identifier: string, password: string) => Promise<User>;
-  register: (name: string, email: string, password: string) => Promise<User>;
+  /** N'ouvre pas de session : l'inscription est suivie d'une connexion explicite */
+  register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -33,9 +34,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback(async (name: string, email: string, password: string) => {
-    const next = await api.register({ name, email, password });
-    setUser(next);
-    return next;
+    // Pas de `setUser` : l'API ne renvoie aucun compte et n'ouvre aucune session,
+    // pour ne pas trahir que l'adresse était libre.
+    await api.register({ name, email, password });
   }, []);
 
   const logout = useCallback(async () => {

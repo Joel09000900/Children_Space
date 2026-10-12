@@ -6,8 +6,11 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const state = location.state as { from?: string; notice?: string } | null;
   // Page demandée avant la redirection vers la connexion (ex. /admin)
-  const from = (location.state as { from?: string } | null)?.from;
+  const from = state?.from;
+  // Message déposé par l'inscription, qui n'ouvre plus de session elle-même
+  const notice = state?.notice;
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -31,6 +34,8 @@ export default function LoginPage() {
         <p className="eyebrow eyebrow--wide">Espace membre</p>
         <h1 className="auth__title">Connexion</h1>
         <p className="auth__lead">Heureux de vous revoir.</p>
+
+        {notice && <p className="auth__message" role="status">{notice}</p>}
 
         <form className="auth__form" onSubmit={onSubmit}>
           <label className="field">
