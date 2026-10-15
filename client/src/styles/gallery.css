@@ -28,10 +28,29 @@
 .view-toggle { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--border); border-radius: var(--radius-md); }
 .view-toggle button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 9px; font-family: var(--font-ui); font-size: 0.78rem; color: var(--muted); }
 .view-toggle button.is-active { background: var(--violet-600); color: #fff; }
+/*
+ * Au-dessus de 760 px, la rangée de collections passe à la ligne plutôt que de
+ * défiler : sa barre de défilement est masquée, si bien qu'entre 760 et 1300 px
+ * environ la dernière puce (« Jardins Intérieurs ») était tronquée sans aucun
+ * indice qu'on pouvait la faire glisser, et inaccessible à la souris.
+ */
+@media (min-width: 761px) {
+  .filters__chips { flex-wrap: wrap; overflow-x: visible; }
+}
 @media (max-width: 760px) {
   .filters__inner { gap: 10px; padding-top: 10px; padding-bottom: 10px; }
   .filters__label, .view-toggle__text { display: none; }
   .view-toggle button { padding: 8px 10px; }
+  /*
+   * Ici le défilement horizontal reste le bon choix, mais rien ne le signalait :
+   * un fondu sur le bord droit laisse deviner la suite. La marge intérieure
+   * permet à la dernière puce de sortir entièrement de la zone estompée.
+   */
+  .filters__chips {
+    padding-right: 28px;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  }
 }
 
 /* ---------- Slider ---------- */
@@ -65,7 +84,13 @@
 .slider__nav--next { right: var(--gutter); }
 .slider__footer { position: relative; display: flex; justify-content: center; align-items: center; padding: 10px var(--gutter) 0; }
 .slider__dots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-.slider__dots button { width: 7px; height: 7px; border-radius: 4px; background: var(--border-strong); transition: width 0.3s var(--ease), background 0.3s; }
+.slider__dots button { position: relative; width: 7px; height: 7px; border-radius: 4px; background: var(--border-strong); transition: width 0.3s var(--ease), background 0.3s; }
+/*
+ * Le point mesure 7 px : impossible à viser au doigt. La zone cliquable s'étend
+ * en hauteur (25 px) et à moitié de l'écart de chaque côté (4 px, pour un pas de
+ * 15 px) afin que deux zones voisines se touchent sans se recouvrir.
+ */
+.slider__dots button::after { content: ""; position: absolute; inset: -9px -4px; }
 .slider__dots button.is-active { width: 26px; background: var(--violet-500); }
 .slider__count { position: absolute; right: var(--gutter); font-family: var(--font-display); font-style: italic; color: var(--muted); }
 .slider__count span { margin: 0 4px; opacity: 0.5; }

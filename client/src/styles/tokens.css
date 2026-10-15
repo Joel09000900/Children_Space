@@ -65,6 +65,15 @@
 }
 
 :root[data-theme="light"] {
+  /*
+   * Accents plus foncés : les teintes du thème sombre, conçues pour un fond noir,
+   * tombaient à 2,6:1 (violet) et 2,2:1 (or) sur fond clair, très loin des 4,5:1
+   * exigés pour du petit texte. Ces deux jetons servent surtout de couleur de
+   * texte et de filets ; --gold-300 reste intact, il se lit sur les pastilles
+   * sombres posées sur les photos.
+   */
+  --violet-400: #6d28d9; /* 6,7:1 sur --bg */
+  --gold-500: #8b6914; /* 4,8:1 sur --bg */
   --bg: #faf8ff;
   --bg-2: #f1edfb;
   --surface: #ffffff;

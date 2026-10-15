@@ -116,17 +116,19 @@ body:not(.has-custom-cursor) .cursor-dot, body:not(.has-custom-cursor) .cursor-r
 .ambient--on .ambient__bars i:nth-child(5) { animation-delay: -0.45s; }
 .ambient__main { display: flex; flex-direction: column; gap: 5px; }
 .ambient__modes { display: inline-flex; gap: 2px; padding: 2px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-pill); }
+/* Hauteur : 5 px + 5 px de marge pour des onglets de 24 px, minimum d'une cible tactile (WCAG 2.2). Ils mesuraient 19 px, en corps de 9 px. */
 .ambient__modes button {
-  padding: 2px 10px; border-radius: var(--radius-pill); background: none; border: none; cursor: pointer;
-  font-family: var(--font-ui); font-size: 0.58rem; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase;
+  padding: 5px 10px; border-radius: var(--radius-pill); background: none; border: none; cursor: pointer;
+  font-family: var(--font-ui); font-size: 0.62rem; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase;
   color: var(--muted); transition: background 0.25s var(--ease), color 0.25s var(--ease);
 }
 .ambient__modes button:hover { color: var(--text); }
-.ambient__modes button.is-active { background: var(--violet-500); color: #fff; }
+/* violet-600 et non 500 : le texte blanc de 10 px n'atteignait que 4,2:1 sur #8b5cf6 (5,7:1 ici) */
+.ambient__modes button.is-active { background: var(--violet-600); color: #fff; }
 /* Ligne « en cours » : flèches de part et d'autre du titre */
 .ambient__now { display: flex; align-items: center; gap: 2px; }
 .ambient__step {
-  display: grid; place-items: center; width: 18px; height: 18px; flex-shrink: 0;
+  display: grid; place-items: center; width: 24px; height: 24px; flex-shrink: 0;
   background: none; border: none; cursor: pointer; border-radius: 50%;
   color: var(--muted); font-size: 0.9rem;
   transition: background 0.2s var(--ease), color 0.2s var(--ease);

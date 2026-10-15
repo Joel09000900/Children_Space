@@ -8,6 +8,7 @@ import { useReveal } from "../hooks/useReveal";
 import { useSite } from "../context/SiteContext";
 import { useAuth } from "../context/AuthContext";
 import Slideshow from "../components/Slideshow";
+import { LoadError, Loading } from "../components/PageState";
 import PublicationForm from "../components/PublicationForm";
 
 const KIND_LABELS: Record<PublicationKind, string> = {
@@ -70,8 +71,8 @@ export default function BibliographyPage() {
 
   useReveal([data, items]);
 
-  if (loading) return <p className="state state--page">Chargement…</p>;
-  if (error || !data) return <p className="state state--page state--error">Impossible de charger la page : {error}</p>;
+  if (loading) return <Loading page />;
+  if (error || !data) return <LoadError page message={`Impossible de charger la page : ${error}`} />;
 
   const isAdmin = user?.role === "ADMIN";
   const publications = items ?? data;
@@ -117,9 +118,12 @@ export default function BibliographyPage() {
     <div className="biblio">
       <header className="section biblio__hero">
         <figure className="biblio__portrait reveal">
-          <span className="corner corner--tl" aria-hidden="true" />
-          <Slideshow images={PORTRAITS} alt={`Portrait de ${artistName}`} className="portrait-slideshow" />
-          <span className="corner corner--br" aria-hidden="true" />
+          {/* Les équerres s'ancrent sur ce cadre, pas sur la figure : celle-ci contient aussi la légende */}
+          <div className="biblio__frame">
+            <span className="corner corner--tl" aria-hidden="true" />
+            <Slideshow images={PORTRAITS} alt={`Portrait de ${artistName}`} className="portrait-slideshow" />
+            <span className="corner corner--br" aria-hidden="true" />
+          </div>
           <figcaption>
             {artistName}
             <span>{settings.artist_role || "Artiste peintre"}</span>

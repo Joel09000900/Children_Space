@@ -10,6 +10,15 @@
  */
 .biblio__hero { display: flex; flex-direction: column; gap: clamp(24px, 4vw, 48px); padding-bottom: 20px; }
 .biblio__portrait { position: relative; margin: 0; padding: 0; width: 100%; }
+/*
+ * Cadre de l'image : sans lui, l'équerre du bas se posait sous la légende, détachée
+ * du cliché. Elles débordent de 8 px seulement, ce que la gouttière (16 px au
+ * minimum) absorbe sans créer de défilement horizontal.
+ */
+.biblio__frame { position: relative; }
+.biblio__frame .corner { width: 40px; height: 40px; }
+.biblio__frame .corner--tl { top: -8px; left: -8px; }
+.biblio__frame .corner--br { bottom: -8px; right: -8px; }
 .biblio__portrait img {
   display: block; width: 100%; height: auto; aspect-ratio: 16 / 9;
   /*

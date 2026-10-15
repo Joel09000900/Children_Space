@@ -32,11 +32,12 @@ export default function FilterBar({ collections, active, onChange, view, onViewC
             </button>
           ))}
         </div>
+        {/* Le texte des boutons disparaît sous 760 px (display: none) : l'aria-label garde un nom lisible par les lecteurs d'écran */}
         <div className="view-toggle" role="group" aria-label="Mode d'affichage">
-          <button className={view === "slider" ? "is-active" : ""} onClick={() => onViewChange("slider")} aria-pressed={view === "slider"}>
+          <button className={view === "slider" ? "is-active" : ""} onClick={() => onViewChange("slider")} aria-pressed={view === "slider"} aria-label="Affichage en galerie">
             <FiImage aria-hidden="true" /> <span className="view-toggle__text">Galerie</span>
           </button>
-          <button className={view === "grid" ? "is-active" : ""} onClick={() => onViewChange("grid")} aria-pressed={view === "grid"}>
+          <button className={view === "grid" ? "is-active" : ""} onClick={() => onViewChange("grid")} aria-pressed={view === "grid"} aria-label="Affichage en grille">
             <FiGrid aria-hidden="true" /> <span className="view-toggle__text">Grille</span>
           </button>
         </div>

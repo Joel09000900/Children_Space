@@ -63,8 +63,14 @@ export default function App() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const page = PAGE_TITLES.find(([path]) => pathname.startsWith(path))?.[1];
-    document.title = page ? `${page} — ${artistName}` : `${artistName} — Galerie d'art virtuelle`;
+    // Comparaison exacte, comme le routeur : « startsWith » titrait « Administration »
+    // une adresse inexistante telle que /admin/xyz, que le routeur envoie en 404.
+    const path = pathname.replace(/\/+$/, "") || "/";
+    const page = PAGE_TITLES.find(([p]) => p === path)?.[1];
+    if (page) document.title = `${page} — ${artistName}`;
+    else if (path === "/") document.title = `${artistName} — Galerie d'art virtuelle`;
+    // Le serveur répond 200 à toute adresse (repli SPA) : le titre est le seul signe d'une page absente
+    else document.title = `Page introuvable — ${artistName}`;
   }, [pathname, artistName]);
 
   return (
