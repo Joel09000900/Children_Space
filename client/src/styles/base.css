@@ -115,7 +115,10 @@ p { margin: 0; }
 
 .state { padding: 80px var(--gutter); text-align: center; color: var(--muted); font-style: italic; }
 .state--page { min-height: 70vh; display: grid; place-items: center; padding-top: calc(var(--nav-h) + 40px); }
-.state--error { color: #f87171; }
+/* --bad vaut #f87171 en sombre, #b91c1c en clair : le rouge pâle d'origine tombait à 2,8:1 sur fond clair */
+.state--error { color: var(--bad); }
+.state__hint { margin-top: 12px; font-size: 0.9rem; font-style: normal; }
+.state button { margin-top: 16px; font-style: normal; }
 
 /*
  * Diaporama (composant Slideshow) — mécanique seule : les clichés occupent la

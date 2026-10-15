@@ -16,6 +16,7 @@ import ArtworkGrid from "../components/ArtworkGrid";
 import ArtworkModal from "../components/ArtworkModal";
 import ContactCTA from "../components/ContactCTA";
 import HeroTitlesForm from "../components/HeroTitlesForm";
+import { LoadError, Loading } from "../components/PageState";
 
 export default function GalleryPage() {
   const { artistName, settings, saveSettings } = useSite();
@@ -132,8 +133,8 @@ export default function GalleryPage() {
           onViewChange={setView}
         />
 
-        {artworks.loading && !artworks.data && <p className="state">Accrochage des œuvres…</p>}
-        {artworks.error && <p className="state state--error">Impossible de charger la galerie : {artworks.error}</p>}
+        {artworks.loading && !artworks.data && <Loading label="Accrochage des œuvres…" />}
+        {artworks.error && <LoadError message={`Impossible de charger la galerie : ${artworks.error}`} />}
         {slugMissing && (
           <p className="state state--error">
             L'œuvre « {openSlug} » est introuvable.{" "}

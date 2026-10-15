@@ -23,12 +23,29 @@ import type {
  */
 const BASE = (import.meta.env.VITE_API_URL ?? "").trim().replace(/\/+$/, "");
 
+/**
+ * Messages affichés tels quels dans l'interface : le navigateur, lui, ne parle
+ * qu'anglais (« Failed to fetch ») et ne dit rien d'utile au visiteur.
+ */
+export const NETWORK_ERROR = "Le serveur est injoignable pour le moment. Vérifiez votre connexion, puis réessayez.";
+export const SERVER_ERROR = "Le serveur est momentanément indisponible. Réessayez dans un instant.";
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   // credentials: "include" est indispensable dès que l'API est sur un autre domaine,
   // sinon le cookie de session n'est jamais transmis et la connexion ne survit pas au rechargement.
-  const res = await fetch(`${BASE}/api${path}`, { credentials: "include", ...init });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}/api${path}`, { credentials: "include", ...init });
+  } catch (err) {
+    // Une requête annulée volontairement (changement de page) n'est pas une panne
+    if (err instanceof DOMException && err.name === "AbortError") throw err;
+    // Réseau coupé, serveur éteint ou origine refusée par CORS : le navigateur ne les distingue pas
+    throw new Error(NETWORK_ERROR);
+  }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
+    // 502/503/504 : la passerelle répond à la place d'une API qui démarre ou qui est tombée
+    if (!body.error && res.status >= 502 && res.status <= 504) throw new Error(SERVER_ERROR);
     throw new Error(body.error ?? `Erreur ${res.status}`);
   }
   if (res.status === 204) return undefined as T;

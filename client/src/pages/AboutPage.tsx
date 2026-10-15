@@ -4,6 +4,7 @@ import { useAsync } from "../hooks/useAsync";
 import { useReveal } from "../hooks/useReveal";
 import ContactCTA from "../components/ContactCTA";
 import Slideshow from "../components/Slideshow";
+import { LoadError, Loading } from "../components/PageState";
 
 /**
  * Clichés qui défilent dans l'en-tête, dans l'ordre d'affichage.
@@ -38,8 +39,8 @@ export default function AboutPage() {
   const { data, loading, error } = useAsync((s) => api.about(s), []);
   useReveal([data]);
 
-  if (loading) return <p className="state state--page">Chargement…</p>;
-  if (error || !data) return <p className="state state--page state--error">Impossible de charger la page : {error}</p>;
+  if (loading) return <Loading page />;
+  if (error || !data) return <LoadError page message={`Impossible de charger la page : ${error}`} />;
 
   /* `data.heroImage` n'est plus lu ici : l'en-tête montre le diaporama d'exposition
      plutôt que l'œuvre tirée de la base. Le champ reste servi par /api/about. */

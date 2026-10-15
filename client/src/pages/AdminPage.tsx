@@ -5,6 +5,7 @@ import type { AdminStats, ContactMessage, ContactStatus } from "../api/types";
 import { useAuth } from "../context/AuthContext";
 import ChartCard from "../components/charts/ChartCard";
 import TimeSeriesChart from "../components/charts/TimeSeriesChart";
+import { Loading } from "../components/PageState";
 
 const RANGES = [7, 30, 90];
 
@@ -20,7 +21,7 @@ export default function AdminPage() {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) return <p className="state state--page">Chargement…</p>;
+  if (loading) return <Loading page />;
   // La destination est transmise à la page de connexion, qui y ramènera après login
   if (!user) return <Navigate to="/connexion" replace state={{ from: location.pathname }} />;
   if (user.role !== "ADMIN") {
