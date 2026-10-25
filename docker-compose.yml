@@ -7,7 +7,9 @@ services:
       POSTGRES_PASSWORD: olikrys
       POSTGRES_DB: olikrys
     ports:
-      - "5432:5432"
+      # 127.0.0.1 : sans cette adresse, Docker publie le port sur toutes les interfaces
+      # et la base (olikrys / olikrys) devient joignable depuis tout le réseau local.
+      - "127.0.0.1:5432:5432"
     volumes:
       - olikrys-data:/var/lib/postgresql/data
 
