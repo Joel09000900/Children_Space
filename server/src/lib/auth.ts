@@ -11,6 +11,13 @@ export const SESSION_COOKIE = "olikrys_session";
 const SESSION_DAYS = 30;
 /** Longueur minimale du mot de passe admin en production */
 export const MIN_PROD_ADMIN_PASSWORD = 12;
+/**
+ * Valeur d'exemple de .env.example. Le dépôt est public : ce mot de passe est
+ * connu de tous, et ses 24 caractères passent le contrôle de longueur ci-dessus.
+ * Quelqu'un qui copierait l'exemple sans le changer ouvrirait donc l'administration
+ * à n'importe qui — d'où ce refus explicite, tout aussi valable pour ses variantes.
+ */
+export const EXAMPLE_ADMIN_PASSWORD_RE = /^change[-_ ]?moi/i;
 /** Le pseudo sert d'identifiant de connexion : pas d'arobase, réservée aux e-mails */
 export const USERNAME_RE = /^[a-z0-9._-]{3,40}$/;
 
@@ -93,6 +100,11 @@ export function adminConfig(env: NodeJS.ProcessEnv = process.env): AdminConfig |
   if (env.NODE_ENV === "production" && password.length < MIN_PROD_ADMIN_PASSWORD) {
     throw new Error(
       `ADMIN_PASSWORD trop faible : ${MIN_PROD_ADMIN_PASSWORD} caractères minimum en production (actuel : ${password.length})`,
+    );
+  }
+  if (env.NODE_ENV === "production" && EXAMPLE_ADMIN_PASSWORD_RE.test(password.trim())) {
+    throw new Error(
+      "ADMIN_PASSWORD reprend l'exemple de .env.example, publié sur un dépôt public : choisissez un mot de passe qui vous est propre",
     );
   }
 

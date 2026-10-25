@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   MIN_PROD_ADMIN_PASSWORD,
@@ -30,6 +31,30 @@ describe("configuration du compte admin", () => {
 
   it("accepte un mot de passe assez long en production", () => {
     const password = "x".repeat(MIN_PROD_ADMIN_PASSWORD);
+    expect(adminConfig({ ...base, ADMIN_PASSWORD: password, NODE_ENV: "production" })?.password).toBe(password);
+  });
+
+  it("refuse en production le mot de passe d'exemple de .env.example", () => {
+    // Lu dans le fichier plutôt que recopié : si l'exemple change sans que la règle suive,
+    // ce test échoue au lieu de laisser une valeur publique passer le contrôle.
+    const example = /^ADMIN_PASSWORD="?([^"\r\n]+)"?/m.exec(readFileSync(".env.example", "utf8"))?.[1];
+    expect(example).toBeTruthy();
+    expect(example!.length).toBeGreaterThanOrEqual(MIN_PROD_ADMIN_PASSWORD); // il passerait donc le seul test de longueur
+    expect(() => adminConfig({ ...base, ADMIN_PASSWORD: example, NODE_ENV: "production" })).toThrow(/exemple/);
+  });
+
+  it("refuse aussi ses variantes courantes en production", () => {
+    for (const password of ["Change-Moi-123456", "  change_moi_en_prod  ", "CHANGE MOI MAINTENANT"]) {
+      expect(() => adminConfig({ ...base, ADMIN_PASSWORD: password, NODE_ENV: "production" })).toThrow(/exemple/);
+    }
+  });
+
+  it("tolère l'exemple en développement, où il sert à démarrer", () => {
+    expect(adminConfig({ ...base, ADMIN_PASSWORD: "change-moi-en-production", NODE_ENV: "development" })).not.toBeNull();
+  });
+
+  it("n'écarte pas un mot de passe réel qui contient « moi » ailleurs", () => {
+    const password = "un-mot-de-passe-pour-moi-seul";
     expect(adminConfig({ ...base, ADMIN_PASSWORD: password, NODE_ENV: "production" })?.password).toBe(password);
   });
 
