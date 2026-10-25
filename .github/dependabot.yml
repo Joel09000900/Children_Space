@@ -1,0 +1,44 @@
+version: 2
+
+# Dependabot propose chaque semaine les mises à jour de dépendances et, tout de
+# suite, celles qui corrigent une faille connue. Sans lui, les alertes ne se voient
+# qu'en lançant `npm audit` à la main : le serveur est passé de 3 à 10 alertes en
+# une semaine sans que rien ne le signale.
+#
+# Les mises à jour mineures et correctives sont regroupées en une seule demande par
+# dossier pour ne pas noyer le dépôt ; les versions majeures (Prisma 7, Zod 4,
+# Vitest 5...) restent des demandes séparées, à relire une par une.
+updates:
+  - package-ecosystem: npm
+    directory: /server
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      mineures-et-correctifs:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /client
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      mineures-et-correctifs:
+        update-types: [minor, patch]
+
+  # Racine : seulement `concurrently`, qui lance front et back en développement
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+
+  # Les actions du workflow CI sont du code tiers exécuté à chaque envoi
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2

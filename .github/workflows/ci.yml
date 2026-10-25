@@ -1,0 +1,65 @@
+name: CI
+
+# Vérifie chaque envoi et chaque pull request : types, tests, build, dépendances.
+# Rien ici n'a besoin d'un secret ni de la base de données : les tests du serveur
+# simulent Prisma, et le build du client ne contacte aucune API.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Lecture seule : le workflow ne peut ni pousser, ni commenter, ni publier.
+permissions:
+  contents: read
+
+# Un envoi plus récent annule la vérification de l'ancien sur la même branche.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Serveur
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22 # celle de Render (render.yaml)
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      # Le client Prisma est généré, pas versionné : sans lui, les types et les tests ne chargent pas.
+      - run: npx prisma generate
+      - run: npm run typecheck
+      - run: npm test
+      # Informatif pour l'instant : les alertes « high » restantes (zod, prisma et sa chaîne)
+      # n'ont de correctif que dans une version majeure. Les rendre bloquantes
+      # laisserait la CI rouge en permanence ; Dependabot ouvre déjà les mises à jour.
+      - name: Audit des dépendances de production
+        run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true
+
+  client:
+    name: Client
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      # Bloquant : le client n'a plus aucune alerte en production, toute nouvelle doit se voir.
+      - name: Audit des dépendances de production
+        run: npm audit --omit=dev --audit-level=high
